@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { SharedModule } from './shared/shared/shared.module';
-import * as ion from 'ion-js';
+import { FileParserService } from './services/file-parser.service';
+import { IoFile } from './core/models';
+import { RobotStateService, SessionService } from './services';
 
 @Component({
   selector: 'app-root',
@@ -10,6 +12,12 @@ import * as ion from 'ion-js';
 })
 export class AppComponent {
   title = 'ion-reader';
+
+  fileParserService = inject(FileParserService);
+  robotStateService = inject(RobotStateService);
+  sessionService = inject(SessionService);
+
+  interval!: number;
 
   onUpload(event: any) {
     // Check if we have files from the upload event
@@ -24,14 +32,22 @@ export class AppComponent {
         const fileContent = e.target.result as ArrayBuffer;
         console.log('File loaded, processing ION data...');
 
-        try {
-          // Parse the ION data
-          const ionReader = ion.makeReader(new Uint8Array(fileContent));
-          const result = ion.load(ionReader) as any;
-          console.log('Parsed ION data:', result);
-        } catch (error) {
-          console.error('Error parsing ION data:', error);
-        }
+        this.fileParserService
+          .parseIonData<IoFile>(fileContent)
+          .then((data) => {
+            data.metadata.botConfig
+              ? this.robotStateService.setRobotConfig(data.metadata.botConfig)
+              : null;
+            data.metadata.botInfo
+              ? this.robotStateService.setRobotInfo(data.metadata.botInfo)
+              : null;
+            data.metadata.sessionInfo
+              ? this.sessionService.setSession(data.metadata.sessionInfo)
+              : null;
+          })
+          .catch((error) => {
+            console.error('Error parsing ION data:', error);
+          });
       };
 
       // Handle errors
