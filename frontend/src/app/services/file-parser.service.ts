@@ -127,8 +127,9 @@ export class FileParserService extends SignalsSimpleStoreService<FileParserState
 
             case ion.IonTypes.CLOB:
             case ion.IonTypes.BLOB:
-              // Simplified handling for binary data
-              results.push('[Binary data]');
+              // Keep binary data for later use instead of using a placeholder
+              const binaryValue = reader.uInt8ArrayValue();
+              results.push(binaryValue);
               break;
 
             case ion.IonTypes.LIST:
@@ -240,8 +241,9 @@ export class FileParserService extends SignalsSimpleStoreService<FileParserState
 
         case ion.IonTypes.CLOB:
         case ion.IonTypes.BLOB:
-          // Simplified handling for binary data
-          return '[Binary data]';
+          // Keep binary data for later use instead of using a placeholder
+          const binaryValue = reader.uInt8ArrayValue();
+          return binaryValue;
 
         case ion.IonTypes.LIST:
           reader.stepIn();
