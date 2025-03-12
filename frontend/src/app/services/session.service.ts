@@ -3,7 +3,7 @@ import { SignalsSimpleStoreService } from '../core/services';
 import { SessionInformation } from '../core/models';
 
 export interface SessionState {
-  session: SessionInformation;
+  session: any;
 }
 
 @Injectable({
@@ -22,6 +22,6 @@ export class SessionService extends SignalsSimpleStoreService<SessionState> {
   }
 
   getSession() {
-    return this.state().session;
+    return this.state().session?._fields;
   }
 }
