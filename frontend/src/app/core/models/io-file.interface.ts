@@ -11,4 +11,5 @@ export interface IoFile {
     botModel?: BotModel;
     mapData?: MapModel;
   };
+  topics: any[];
 }

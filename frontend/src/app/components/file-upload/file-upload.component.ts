@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { SharedModule } from '../../shared/shared/shared.module';
 import { RobotStateService, SessionService } from '../../services';
 import { FileParserService } from '../../services/file-parser.service';
+import { IoFile } from '../../core/models';
 
 @Component({
   selector: 'app-file-upload',
@@ -32,15 +33,7 @@ export class FileUploadComponent {
         this.fileParserService
           .parseIonData(fileContent)
           .then((data) => {
-            data.metadata.botConfig
-              ? this.robotStateService.setRobotConfig(data.metadata.botConfig)
-              : null;
-            data.metadata.botInfo
-              ? this.robotStateService.setRobotInfo(data.metadata.botInfo)
-              : null;
-            data.metadata.sessionInfo
-              ? this.sessionService.setSession(data.metadata.sessionInfo)
-              : null;
+            this.extractDataToState(data);
           })
           .catch((error) => {
             console.error('Error parsing ION data:', error);
@@ -55,5 +48,12 @@ export class FileUploadComponent {
       // Read the file as binary data
       reader.readAsArrayBuffer(file);
     }
+  }
+
+  private extractDataToState(data: IoFile) {
+    const { botConfig, botInfo, sessionInfo } = data.metadata;
+    botConfig ? this.robotStateService.setRobotConfig(botConfig) : null;
+    botInfo ? this.robotStateService.setRobotInfo(botInfo) : null;
+    sessionInfo ? this.sessionService.setSession(sessionInfo) : null;
   }
 }
