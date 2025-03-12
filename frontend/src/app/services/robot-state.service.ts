@@ -30,10 +30,10 @@ export class RobotStateService extends SignalsSimpleStoreService<RobotState> {
   }
 
   getRobotConfig() {
-    return this.state().robotConfig?._fields;
+    return this.state().robotConfig;
   }
 
   getRobotInfo() {
-    return this.state().robotInfo?._fields;
+    return this.state().robotInfo;
   }
 }

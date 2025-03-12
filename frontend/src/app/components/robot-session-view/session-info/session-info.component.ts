@@ -1,5 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
-import { SessionService } from '../../../services/session.service';
+import { SessionService } from '../../../services';
 import { SharedModule } from '../../../shared/shared/shared.module';
 
 @Component({

@@ -22,6 +22,6 @@ export class SessionService extends SignalsSimpleStoreService<SessionState> {
   }
 
   getSession() {
-    return this.state().session?._fields;
+    return this.state().session;
   }
 }
