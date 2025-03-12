@@ -1,6 +1,5 @@
 import { Component, inject } from '@angular/core';
 import { SharedModule } from '../../shared/shared/shared.module';
-import { IoFile } from '../../core/models';
 import { RobotStateService, SessionService } from '../../services';
 import { FileParserService } from '../../services/file-parser.service';
 
@@ -31,7 +30,7 @@ export class FileUploadComponent {
         console.log('File loaded, processing ION data...');
 
         this.fileParserService
-          .parseIonData<IoFile>(fileContent)
+          .parseIonData(fileContent)
           .then((data) => {
             data.metadata.botConfig
               ? this.robotStateService.setRobotConfig(data.metadata.botConfig)
