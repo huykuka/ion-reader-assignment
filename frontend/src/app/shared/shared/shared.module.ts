@@ -6,6 +6,8 @@ import { RippleModule } from 'primeng/ripple';
 import { FileUploadModule } from 'primeng/fileupload';
 import { TableModule } from 'primeng/table';
 import { BadgeModule } from 'primeng/badge';
+import { SelectModule } from 'primeng/select';
+import { FloatLabelModule } from 'primeng/floatlabel';
 
 const PRIMENG_MODULES = [
   RippleModule,
@@ -13,7 +15,9 @@ const PRIMENG_MODULES = [
   AccordionModule,
   FileUploadModule,
   TableModule,
+  FloatLabelModule,
   BadgeModule,
+  SelectModule,
 ];
 @NgModule({
   declarations: [],

@@ -1,5 +1,4 @@
 export interface Topic {
-  _fields: any;
   topicName?: string;
   topicType?: string;
   frequency?: number;
@@ -13,5 +12,4 @@ export interface TopicMessage {
     message?: string;
     state_id: any;
   };
-  _fields: any;
 }

@@ -1,0 +1,24 @@
+<p-floatlabel variant="on">
+  <p-select
+    [options]="topicService.state().topics || []"
+    optionLabel="topicName"
+    [filter]="true"
+    filterBy="topicName"
+    [showClear]="true"
+    [placeholder]="
+      topicService.state().topics?.length
+        ? 'Select a Topic (' + topicService.state().topics?.length + ' topics)'
+        : 'No topics available'
+    "
+    [disabled]="!topicService.state().topics?.length"
+  >
+    <ng-template #selectedItem let-selectedTopic>
+      <div class="flex items-center gap-2">
+        <div>{{ selectedTopic.topicName }}</div>
+      </div>
+    </ng-template>
+    <ng-template #emptyFilter>
+      <div class="p-2 text-gray-500">No matching topics found</div>
+    </ng-template>
+  </p-select>
+</p-floatlabel>
