@@ -1,11 +1,10 @@
-import { Component, inject, effect } from '@angular/core';
+import { Component, inject, effect, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from '../../../shared/shared/shared.module';
-import { computed } from '@angular/core';
 import { SessionService } from '../../../services';
 import dayjs from 'dayjs';
 import { PlaybackService } from '../../../services/actions/playback.service';
-import { distinctUntilChanged, firstValueFrom } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
 @UntilDestroy()
@@ -20,8 +19,6 @@ export class PlaybackControlsComponent {
   sessionService = inject(SessionService);
   playbackService = inject(PlaybackService);
 
-  slidervalue!: number;
-
   // Computed values from playback service
   sessionState = computed(() => this.sessionService.getSession());
   startTime = computed(() => dayjs(this.sessionState()?.start_time).unix());
@@ -30,10 +27,20 @@ export class PlaybackControlsComponent {
   // Track if playback is active
   isPlaying = false;
 
+  // Selected speed for the dropdown
+  selectedSpeed = { name: '1x', value: 1 };
+
+  get sliderValue() {
+    return this.playbackService.$playbackValue.getValue();
+  }
+
+  set sliderValue(value: number) {
+    this.playbackService.changePlaybackValue(value);
+  }
+
   totalTime = computed(() => {
     // Calculate the difference in seconds
     const diffInSeconds = this.endTime() - this.startTime();
-    console.log(diffInSeconds);
 
     if (diffInSeconds <= 0) return 0;
 
@@ -41,10 +48,6 @@ export class PlaybackControlsComponent {
   });
 
   constructor() {
-    this.playbackService.$playbackValue
-      .pipe(distinctUntilChanged(), untilDestroyed(this))
-      .subscribe(console.log);
-
     // Subscribe to playback state changes
     this.playbackService.isPlaying$
       .pipe(untilDestroyed(this))
@@ -52,14 +55,15 @@ export class PlaybackControlsComponent {
         this.isPlaying = playing;
       });
 
+    // Set the default speed
+    this.selectedSpeed = this.playbackService.availableSpeeds[0];
+
+    // Initialize the playback service with the default speed
+    this.playbackService.changeSpeed(this.selectedSpeed.value);
+
     effect(() => {
       this.playbackService.setTotalDuration(this.totalTime());
     });
-  }
-
-  ngOnDestroy() {
-    // Ensure playback is stopped when component is destroyed
-    this.playbackService.pause();
   }
 
   onSliderChange(event: any) {
@@ -67,7 +71,14 @@ export class PlaybackControlsComponent {
   }
 
   onSpeedChange(event: any) {
-    this.playbackService.changeSpeed(event.value);
+    if (event && event.value) {
+      this.selectedSpeed = event.value;
+      this.playbackService.changeSpeed(event.value);
+    }
+  }
+
+  onReset() {
+    this.playbackService.reset();
   }
 
   async onPlay() {

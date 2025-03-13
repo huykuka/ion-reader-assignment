@@ -8,7 +8,8 @@
       min="0"
       [max]="totalTime()"
       class="w-full"
-      [disabled]="!endTime()"
+      [(ngModel)]="sliderValue"
+      [disabled]="!sessionState()?.start_time"
       (onChange)="onSliderChange($event)"
     />
   </div>
@@ -20,9 +21,17 @@
         pButton
         [label]="isPlaying ? 'Pause' : 'Play'"
         [icon]="isPlaying ? 'pi pi-pause' : 'pi pi-play'"
-        [disabled]="!endTime()"
+        [disabled]="!sessionState()?.start_time"
         class="p-button-rounded"
         (click)="onPlay()"
+      ></button>
+      <button
+        pButton
+        label="Reset"
+        icon="pi pi-refresh"
+        [disabled]="!sessionState()?.start_time"
+        class="p-button-rounded"
+        (click)="onReset()"
       ></button>
       <!-- <div class="flex justify-center items-center mb-2 text-sm h-full">
         <span class="font-medium">{{ totalTime() }}</span>
@@ -34,6 +43,7 @@
       placeholder="Speed"
       optionValue="value"
       optionLabel="name"
+      [(ngModel)]="selectedSpeed"
       (onChange)="onSpeedChange($event)"
     />
   </div>

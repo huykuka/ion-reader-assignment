@@ -111,6 +111,11 @@ export class PlaybackService {
     this.playPauseAction$.next(false);
   }
 
+  reset() {
+    this.playPauseAction$.next(false);
+    this.$playbackValue.next(0);
+  }
+
   togglePlayPause() {
     const currentState = this.$isPlaying.getValue();
     this.playPauseAction$.next(!currentState);
@@ -125,7 +130,6 @@ export class PlaybackService {
   }
 
   setTotalDuration(duration: number) {
-    console.log('durarion is ', duration);
     this.totalDuration = duration;
   }
 
