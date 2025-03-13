@@ -41,6 +41,7 @@ export class CameraViewComponent implements OnInit, OnDestroy {
   );
 
   imageUrl: string | null = null;
+  currentTimestamp: number = 0; // Add timestamp property for debugging
   decodedImages: DecodedImage[] = [];
   isDecoding = false;
   private playbackSubscription: Subscription | null = null;
@@ -151,6 +152,7 @@ export class CameraViewComponent implements OnInit, OnDestroy {
         if (this.decodedImages.length > 0) {
           // Display the first image
           this.imageUrl = this.decodedImages[0].url;
+          this.currentTimestamp = this.decodedImages[0].timestamp;
         }
 
         this.isDecoding = false;
@@ -180,6 +182,7 @@ export class CameraViewComponent implements OnInit, OnDestroy {
 
     if (closestImage) {
       this.imageUrl = closestImage.url;
+      this.currentTimestamp = closestImage.timestamp;
     }
   }
 }
