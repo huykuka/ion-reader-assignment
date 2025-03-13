@@ -5,19 +5,34 @@
   <div *ngIf="selectedTopic()">
     <div class="mb-2 text-sm text-gray-500">
       <span class="font-medium">Topic:</span>
-      {{ selectedTopic()?.topicName }}
+      {{ selectedTopic()!.topicName }}
       <span class="ml-2 font-medium">Type:</span>
-      {{ selectedTopic()?.topicType }}
+      {{ selectedTopic()!.topicType }}
       <span class="ml-2 font-medium">Frequency:</span>
-      {{ selectedTopic()?.frequency }} Hz
+      {{ selectedTopic()!.frequency }} Hz
     </div>
 
-    <!-- <div class="message-content">
-        <pre
-          class="bg-gray-100 p-3 rounded overflow-auto max-h-[300px] text-sm whitespace-pre-wrap break-words"
-          >{{ playbackState().currentMessage | json }}</pre
-        >
-      </div> -->
+    <div class="mb-2 text-sm text-gray-500">
+      <span class="font-medium">Playback Position:</span>
+      {{ currentPlaybackPosition.toFixed(2) }} seconds
+      <span class="ml-2 font-medium" *ngIf="currentMessage">
+        <span class="font-medium">Message Timestamp:</span>
+        {{ formatTimestamp(currentMessage.timestamp) }}
+      </span>
+    </div>
+
+    <div class="message-content" *ngIf="currentMessage; else noCurrentMessage">
+      <pre
+        class="bg-gray-100 p-3 rounded overflow-auto max-h-[300px] text-sm whitespace-pre-wrap break-words"
+        >{{ currentMessage.data | json }}</pre
+      >
+    </div>
+
+    <ng-template #noCurrentMessage>
+      <div class="flex items-center justify-center h-[150px] text-gray-500">
+        <span>No message available at current playback position</span>
+      </div>
+    </ng-template>
   </div>
 
   <ng-template #noMessage>
@@ -25,9 +40,6 @@
       <span *ngIf="!selectedTopic()"
         >Please select a topic to view messages</span
       >
-      <!-- <span *ngIf="selectedTopic() && !playbackState().currentMessage"
-          >No messages available for the selected topic</span
-        > -->
     </div>
   </ng-template>
 </div>

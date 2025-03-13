@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, effect } from '@angular/core';
 import { BehaviorSubject, Observable, Subject, interval, NEVER } from 'rxjs';
 import {
   scan,
@@ -7,6 +7,8 @@ import {
   tap,
   distinctUntilChanged,
 } from 'rxjs/operators';
+import { Topic, TopicMessage } from '../../core/models/topic.model';
+import { TopicService } from '../state/topic.service';
 
 @Injectable({
   providedIn: 'root',
@@ -43,24 +45,39 @@ export class PlaybackService {
   // Stream for play/pause actions
   private playPauseAction$ = new Subject<boolean>();
 
+  // Stream for the current message based on playback position
+  private $currentMessage = new BehaviorSubject<TopicMessage | null>(null);
+
   // Stream for the actual playback
   playback$: Observable<number>;
 
   // Total duration in seconds
   private totalDuration = 0;
 
-  constructor() {
+  constructor(private topicService: TopicService) {
     // Initialize the playback stream
     this.playback$ = this.createPlaybackStream();
 
     // Subscribe to the playback stream to update the playback value
     this.playback$.subscribe((value) => {
       this.$playbackValue.next(value);
+      this.updateCurrentMessage(value);
     });
 
     // Subscribe to play/pause actions
     this.playPauseAction$.subscribe((isPlaying) => {
       this.$isPlaying.next(isPlaying);
+    });
+
+    // Use effect to watch for topic changes
+    effect(() => {
+      // Access the selectedTopic to create a dependency
+
+      // Clear the current message when topic changes
+      this.$currentMessage.next(null);
+
+      // Update the message with the current playback position
+      this.updateCurrentMessage(this.$playbackValue.getValue());
     });
   }
 
@@ -123,6 +140,7 @@ export class PlaybackService {
 
   changePlaybackValue(value: number) {
     this.$playbackValue.next(value);
+    this.updateCurrentMessage(value);
   }
 
   changeSpeed(speed: number) {
@@ -139,5 +157,57 @@ export class PlaybackService {
 
   get speed$(): Observable<number> {
     return this.$speed.asObservable();
+  }
+
+  /**
+   * Find the message with the timestamp closest to the current playback position
+   * @param topic The topic containing messages
+   * @param playbackPosition The current playback position in seconds
+   * @returns The message with the closest timestamp
+   */
+  findClosestMessage(
+    topic: Topic | null,
+    playbackPosition: number
+  ): TopicMessage | null {
+    if (!topic || !topic.messages || topic.messages.length === 0) {
+      return null;
+    }
+
+    // Convert playback position to milliseconds (assuming playbackPosition is in seconds)
+    const targetTimestamp = playbackPosition * 1000;
+
+    // Find the message with the closest timestamp
+    let closestMessage: TopicMessage | null = null;
+    let minDifference = Number.MAX_VALUE;
+
+    for (const message of topic.messages) {
+      if (message.timestamp) {
+        const difference = Math.abs(message.timestamp - targetTimestamp);
+        if (difference < minDifference) {
+          minDifference = difference;
+          closestMessage = message;
+        }
+      }
+    }
+
+    return closestMessage;
+  }
+
+  /**
+   * Get the current message based on playback position
+   * @returns Observable of the current message
+   */
+  get currentMessage$(): Observable<TopicMessage | null> {
+    return this.$currentMessage.asObservable();
+  }
+
+  /**
+   * Update the current message based on the playback position
+   * @param playbackPosition The current playback position
+   */
+  private updateCurrentMessage(playbackPosition: number): void {
+    const selectedTopic = this.topicService.state().selectedTopic;
+    const message = this.findClosestMessage(selectedTopic, playbackPosition);
+    this.$currentMessage.next(message);
   }
 }
