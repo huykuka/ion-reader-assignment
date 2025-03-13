@@ -107,6 +107,7 @@ export class PlaybackService {
               scan((acc) => {
                 // If there was a manual position change, use that value instead
                 if (this.manualPositionChange) {
+                  console.log('manually');
                   this.manualPositionChange = false;
                   return this.$playbackValue.getValue();
                 }
@@ -151,6 +152,7 @@ export class PlaybackService {
   }
 
   changePlaybackValue(value: number) {
+    this.manualPositionChange = true;
     this.$playbackValue.next(value);
   }
 

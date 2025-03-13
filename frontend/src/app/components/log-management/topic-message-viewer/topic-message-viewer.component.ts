@@ -7,6 +7,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Topic, TopicMessage } from '../../../core/models/topic.model';
 import dayjs from 'dayjs';
 import { SessionService } from '../../../services';
+import { ClipboardService } from 'ngx-clipboard';
 
 @UntilDestroy()
 @Component({
@@ -20,6 +21,7 @@ export class TopicMessageViewerComponent {
   topicService = inject(TopicService);
   playbackService = inject(PlaybackService);
   sessionService = inject(SessionService);
+  clipboardService = inject(ClipboardService);
 
   // Current message being displayed
   currentMessage: TopicMessage | null = null;
@@ -78,5 +80,15 @@ export class TopicMessageViewerComponent {
     }
 
     return closestMessage;
+  }
+
+  /**
+   * Copies the current message data to clipboard
+   */
+  copyMessageToClipboard(): void {
+    if (this.currentMessage) {
+      const messageContent = JSON.stringify(this.currentMessage.data, null, 2);
+      this.clipboardService.copy(messageContent);
+    }
   }
 }

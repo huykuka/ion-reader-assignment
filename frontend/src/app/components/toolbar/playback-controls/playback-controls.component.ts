@@ -72,8 +72,8 @@ export class PlaybackControlsComponent {
 
   onSpeedChange(event: any) {
     if (event && event.value) {
-      this.selectedSpeed = event.value;
-      this.playbackService.changeSpeed(event.value);
+      this.selectedSpeed = event.value.value ? event.value : event.value;
+      this.playbackService.changeSpeed(this.selectedSpeed.value);
     }
   }
 

@@ -1,0 +1,98 @@
+<!-- Log Messages -->
+<div class="flex justify-between items-center mb-2">
+  <div class="text-sm text-gray-600">
+    Showing {{ visibleMessages.length }} messages
+  </div>
+  <div>
+    <p-button
+      [label]="shouldScrollToBottom ? 'Auto-scroll ON' : 'Auto-scroll OFF'"
+      [icon]="shouldScrollToBottom ? 'pi pi-lock' : 'pi pi-lock-open'"
+      [outlined]="!shouldScrollToBottom"
+      size="small"
+      (onClick)="toggleAutoScroll()"
+      [styleClass]="
+        shouldScrollToBottom ? 'p-button-success' : 'p-button-secondary'
+      "
+    ></p-button>
+  </div>
+</div>
+
+<!-- Filter Controls -->
+<div class="flex flex-wrap gap-2 mb-3">
+  <div class="flex-1">
+    <span class="p-input-icon-left w-full">
+      <input
+        type="text"
+        pInputText
+        [(ngModel)]="filterText"
+        (input)="applyFilters()"
+        placeholder="Filter messages..."
+        class="w-full p-inputtext-sm"
+      />
+    </span>
+  </div>
+  <div class="flex gap-1">
+    <p-button
+      *ngFor="let level of logLevels"
+      [label]="level.label"
+      [styleClass]="
+        selectedLogLevels.includes(level.value)
+          ? 'p-button-' + level.style
+          : 'p-button-outlined p-button-' + level.style
+      "
+      size="small"
+      (onClick)="toggleLogLevel(level.value)"
+    ></p-button>
+  </div>
+  <p-button
+    icon="pi pi-filter-slash"
+    styleClass="p-button-outlined p-button-secondary"
+    size="small"
+    (onClick)="clearFilters()"
+    pTooltip="Clear all filters"
+    tooltipPosition="top"
+  ></p-button>
+</div>
+
+<div #tableContainer style="max-height: 400px; overflow-y: auto">
+  <p-table
+    #logTable
+    [value]="visibleMessages"
+    styleClass="p-datatable-sm"
+    [scrollable]="true"
+  >
+    <ng-template pTemplate="body" let-message>
+      <tr>
+        <td class="font-mono text-xs whitespace-nowrap">
+          {{ message.timestamp | date : "yyyy-MM-dd HH:mm:ss.SSS" : "UTC" }}
+        </td>
+        <td
+          [ngClass]="getMessageSeverityClass(message)"
+          class="font-mono text-xs break-words"
+        >
+          {{ getMessageText(message) }}
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<!-- <div
+  *ngIf="visibleMessages.length === 0"
+  class="text-center py-4 bg-yellow-50 border border-yellow-200 rounded-md"
+>
+  <div class="flex justify-center items-center text-yellow-700">
+    <i class="pi pi-exclamation-triangle mr-2"></i>
+    <span>No log messages available at this playback position.</span>
+  </div>
+</div> -->
+
+<div
+  *ngIf="visibleMessages.length === 0"
+  class="flex flex-col items-center justify-center p-8 text-gray-500"
+>
+  <i class="pi pi-info-circle text-3xl mb-2"></i>
+  <p class="text-base m-0">
+    No log messages available at this playback position.
+  </p>
+</div>
