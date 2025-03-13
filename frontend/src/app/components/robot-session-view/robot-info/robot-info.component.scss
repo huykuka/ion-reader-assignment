@@ -1,0 +1,87 @@
+
+::ng-deep {
+  .p-datatable {
+    .p-datatable-header {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-width: 1px 0 1px 0;
+    }
+    
+    .p-datatable-thead > tr > th {
+      background: #f8f9fa;
+      color: #495057;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    
+    .p-datatable-tbody > tr:nth-child(even) {
+      background-color: rgba(0, 0, 0, 0.02);
+    }
+    
+    .p-datatable-tbody > tr:hover {
+      background-color: rgba(0, 0, 0, 0.04);
+    }
+  }
+}
+
+.param-name {
+  font-family: monospace;
+  font-weight: 500;
+  color: #333;
+  max-width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.param-value {
+  color: #555;
+  word-break: break-word;
+}
+
+.status-enabled {
+  color: #2e7d32;
+  font-weight: 500;
+}
+
+.status-disabled {
+  color: #c62828;
+}
+
+.multi-value {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  .value-item {
+    padding: 2px 0;
+    
+    &:not(:last-child) {
+      border-bottom: 1px dashed #e0e0e0;
+    }
+  }
+}
+
+.text-center {
+  text-align: center;
+}
+
+.empty-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: #6c757d;
+  
+  i {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  p {
+    font-size: 1rem;
+    margin: 0;
+  }
+}

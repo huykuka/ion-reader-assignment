@@ -1,0 +1,53 @@
+<p-table
+  [value]="sessionArray()"
+  styleClass="p-datatable-sm"
+  [tableStyle]="{ 'min-width': '50rem' }"
+  [scrollable]="true"
+>
+  <ng-template pTemplate="body" let-item>
+    <tr class="hover:bg-gray-50">
+      <td
+        class="font-mono font-medium text-gray-800 max-w-[250px] overflow-hidden text-ellipsis"
+      >
+        {{ item.key }}
+      </td>
+      <td class="text-gray-700 break-words">
+        @if (item.isMultiValue) {
+        <div class="flex flex-col gap-1">
+          @for (val of item.value; track val) {
+          <div
+            class="py-1 border-b border-dashed border-gray-200 last:border-0"
+          >
+            @if (typeof val === 'boolean') {
+            <span [class]="val ? 'text-green-700 font-medium' : 'text-red-700'">
+              {{ val ? "Enabled" : "Disabled" }}
+            </span>
+            } @else if (val === null || val === undefined) {
+            <span class="text-gray-400 italic">N/A</span>
+            } @else {
+            {{ val }}
+            }
+          </div>
+          }
+        </div>
+        } @else if (typeof item.value === 'boolean') {
+        <span
+          [class]="item.value ? 'text-green-700 font-medium' : 'text-red-700'"
+        >
+          {{ item.value ? "Enabled" : "Disabled" }}
+        </span>
+        } @else if (item.value === null || item.value === undefined) {
+        <span class="text-gray-400 italic">N/A</span>
+        } @else {
+        {{ item.value }}
+        }
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <div class="flex flex-col items-center justify-center p-8 text-gray-500">
+      <i class="pi pi-info-circle text-3xl mb-2"></i>
+      <p class="text-base m-0">No session information available</p>
+    </div>
+  </ng-template>
+</p-table>
