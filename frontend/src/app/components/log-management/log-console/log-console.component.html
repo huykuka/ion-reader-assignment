@@ -1,0 +1,51 @@
+<!-- Log Messages -->
+<div class="flex justify-between items-center mb-2">
+  <div class="text-sm text-gray-600">
+    Showing {{ visibleMessages.length }} messages
+  </div>
+  <div>
+    <p-button
+      [label]="shouldScrollToBottom ? 'Auto-scroll ON' : 'Auto-scroll OFF'"
+      [icon]="shouldScrollToBottom ? 'pi pi-lock' : 'pi pi-lock-open'"
+      [outlined]="!shouldScrollToBottom"
+      size="small"
+      (onClick)="toggleAutoScroll()"
+      [styleClass]="
+        shouldScrollToBottom ? 'p-button-success' : 'p-button-secondary'
+      "
+    ></p-button>
+  </div>
+</div>
+
+<div #tableContainer style="max-height: 400px; overflow-y: auto">
+  <p-table
+    #logTable
+    [value]="visibleMessages"
+    styleClass="p-datatable-sm"
+    [scrollable]="true"
+  >
+    <ng-template pTemplate="body" let-message>
+      <tr>
+        <td class="font-mono text-xs whitespace-nowrap">
+          {{ message.timestamp | date : "yyyy-MM-dd HH:mm:ss.SSS" : "UTC" }}
+        </td>
+        <td
+          [ngClass]="getMessageSeverityClass(message)"
+          class="font-mono text-xs break-words"
+        >
+          {{ getMessageText(message) }}
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<div
+  *ngIf="visibleMessages.length === 0"
+  class="text-center py-4 bg-yellow-50 border border-yellow-200 rounded-md"
+>
+  <div class="flex justify-center items-center text-yellow-700">
+    <i class="pi pi-exclamation-triangle mr-2"></i>
+    <span>No log messages available at this playback position.</span>
+  </div>
+</div>

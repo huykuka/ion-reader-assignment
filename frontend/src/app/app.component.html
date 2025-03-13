@@ -9,16 +9,16 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <!-- File Upload - Full Width on Mobile, Top Row on Desktop -->
       <div class="lg:col-span-12 bg-white rounded-lg shadow-sm p-4">
-        <app-file-upload></app-file-upload>
+        <app-toolbar />
       </div>
 
       <!-- Session View - Right Side on Desktop, Full Width on Mobile -->
-      <div class="lg:col-span-7 lg:h-[calc(100vh-220px)] overflow-auto">
+      <div class="lg:col-span-7 overflow-auto">
         <app-robot-session-view></app-robot-session-view>
       </div>
 
       <!-- Log Management - Left Side on Desktop, Full Width on Mobile -->
-      <div class="lg:col-span-5 lg:h-[calc(100vh-220px)] overflow-auto">
+      <div class="lg:col-span-5 overflow-auto">
         <app-log-management></app-log-management>
       </div>
     </div>

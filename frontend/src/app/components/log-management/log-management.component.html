@@ -1,8 +1,11 @@
-<p-card header="Log Viewer">
-  <!-- Topic Message Viewer Component -->
-  <app-topic-dropdown />
-  <app-topic-message-viewer></app-topic-message-viewer>
+<div class="grid grid-cols-1 gap-4">
+  <p-card header="Topic Viewer">
+    <app-topic-dropdown />
+    <app-topic-message-viewer></app-topic-message-viewer>
+  </p-card>
 
-  <!-- Playback Controls Component -->
-  <app-playback-controls></app-playback-controls>
-</p-card>
+  <!-- Log Console -->
+  <p-card header="Log Console">
+    <app-log-console></app-log-console>
+  </p-card>
+</div>

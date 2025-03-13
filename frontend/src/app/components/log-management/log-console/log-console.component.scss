@@ -1,0 +1,42 @@
+.log-table-container {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  }
+}
+
+:host ::ng-deep {
+  .p-datatable-wrapper {
+    overflow-y: auto;
+  }
+
+  .p-datatable .p-datatable-thead > tr > th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: #f8f9fa;
+  }
+
+  .p-datatable .p-datatable-tbody > tr > td {
+    padding: 0.5rem 0.75rem;
+  }
+  
+  // Alternate row colors for better readability
+  .p-datatable .p-datatable-tbody > tr:nth-child(even) {
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+}
+
+// Styling for the auto-scroll button
+.p-button.p-button-success.p-button-outlined {
+  &:hover {
+    background: rgba(40, 167, 69, 0.04);
+  }
+}
+
+.p-button.p-button-secondary.p-button-outlined {
+  &:hover {
+    background: rgba(108, 117, 125, 0.04);
+  }
+}

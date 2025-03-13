@@ -6,11 +6,6 @@ export interface Topic {
 }
 
 export interface TopicMessage {
-  data?: {
-    arguments?: any;
-    level?: number;
-    message?: string;
-    state_id: any;
-  };
+  data?: any;
   timestamp?: number;
 }

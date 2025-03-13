@@ -1,0 +1,71 @@
+<div
+  class="flex flex-row items-center space-x-4 justify-between"
+  *ngIf="endTime() > 0"
+>
+  <!-- Playback Buttons -->
+  <div class="play-controls flex items-center gap-2">
+    <button
+      pButton
+      [label]="isPlaying ? 'Pause' : 'Play'"
+      [icon]="isPlaying ? 'pi pi-pause' : 'pi pi-play'"
+      [disabled]="!sessionState()?.start_time"
+      class="p-button-rounded"
+      (click)="onPlay()"
+    ></button>
+    <button
+      pButton
+      label="Reset"
+      icon="pi pi-refresh"
+      [disabled]="!sessionState()?.start_time"
+      class="p-button-rounded"
+      (click)="onReset()"
+    ></button>
+  </div>
+  <p-slider
+    type="range"
+    min="0"
+    [max]="totalTime()"
+    class="w-[500px]"
+    [(ngModel)]="sliderValue"
+    [disabled]="!sessionState()?.start_time"
+    (onChange)="onSliderChange($event)"
+  />
+
+  <!-- Compact Speed Selector -->
+  <div
+    class="speed-selector flex items-center border border-gray-200 rounded-md bg-white"
+  >
+    <ng-container
+      *ngFor="let speed of playbackService.availableSpeeds; let i = index"
+    >
+      <button
+        type="button"
+        class="speed-button px-2 py-1 text-xs transition-all duration-150 focus:outline-none"
+        [style.color]="selectedSpeed.value === speed.value ? '#2196F3' : '#666'"
+        [style.font-weight]="
+          selectedSpeed.value === speed.value ? 'bold' : 'normal'
+        "
+        [style.background-color]="
+          selectedSpeed.value === speed.value
+            ? 'rgba(33, 150, 243, 0.1)'
+            : 'transparent'
+        "
+        [disabled]="!sessionState()?.start_time"
+        (click)="onSpeedChange({ value: speed })"
+      >
+        {{ speed.name }}
+      </button>
+      <div
+        *ngIf="i < playbackService.availableSpeeds.length - 1"
+        class="h-4 w-px bg-gray-200"
+      ></div>
+    </ng-container>
+  </div>
+</div>
+
+<div
+  *ngIf="endTime() === 0"
+  class="flex justify-center items-center p-4 text-gray-500"
+>
+  <span>No playback data available</span>
+</div>
