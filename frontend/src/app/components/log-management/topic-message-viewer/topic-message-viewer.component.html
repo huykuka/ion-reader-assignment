@@ -1,6 +1,6 @@
 <!-- Message Display Panel -->
 <div
-  class="mb-4 p-4 border rounded-md bg-white shadow-sm min-h-[200px] transition-all duration-300"
+  class="mb-4 p-4 border border-gray-400 rounded-md bg-white shadow-sm min-h-[200px] transition-all duration-300"
 >
   <div *ngIf="selectedTopic()">
     <div class="mb-2 text-sm text-gray-500">
@@ -24,6 +24,18 @@
     </div>
 
     <div class="message-content" *ngIf="currentMessage; else noCurrentMessage">
+      <div class="flex justify-between items-center mb-2">
+        <span class="text-sm font-medium text-gray-700">Message Content</span>
+        <button 
+          pButton 
+          pRipple 
+          icon="pi pi-copy" 
+          class="p-button-sm p-button-text" 
+          (click)="copyMessageToClipboard()"
+          pTooltip="Copy to clipboard"
+          tooltipPosition="left"
+        ></button>
+      </div>
       <pre
         class="bg-gray-100 p-3 rounded overflow-auto max-h-[300px] text-sm whitespace-pre-wrap break-words"
         >{{ currentMessage.data | json }}</pre

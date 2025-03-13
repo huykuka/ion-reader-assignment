@@ -13,6 +13,7 @@ import { CardModule } from 'primeng/card';
 import { FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToolbarModule } from 'primeng/toolbar';
+import { ClipboardModule } from 'ngx-clipboard';
 
 const PRIMENG_MODULES = [
   RippleModule,
@@ -33,7 +34,7 @@ const PRIMENG_MODULES = [
   ToolbarModule,
 ];
 
-const ANGULAR_MODULES = [FormsModule, CommonModule];
+const ANGULAR_MODULES = [FormsModule, CommonModule, ClipboardModule];
 @NgModule({
   declarations: [],
   imports: [...ANGULAR_MODULES, ...PRIMENG_MODULES],

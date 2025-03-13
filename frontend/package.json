@@ -22,6 +22,7 @@
     "@tailwindcss/postcss": "^4.0.13",
     "dayjs": "^1.11.13",
     "ion-js": "^5.2.1",
+    "ngx-clipboard": "^16.0.0",
     "primeicons": "^7.0.0",
     "primeng": "^19.0.9",
     "rxjs": "~7.8.0",
