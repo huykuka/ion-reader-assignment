@@ -47,8 +47,9 @@ export class CameraViewComponent implements OnInit, OnDestroy {
 
   constructor() {
     effect(() => {
-      if (this.compresImageTopic()) {
-        this.processAllImageData();
+      const topic = this.compresImageTopic();
+      if (topic) {
+        this.processAllImageData(topic);
       }
     });
   }
@@ -74,50 +75,74 @@ export class CameraViewComponent implements OnInit, OnDestroy {
     });
   }
 
-  processAllImageData() {
-    const topic = this.compresImageTopic();
+  processAllImageData(topic: Topic): Promise<void> {
     if (!topic || !topic.messages || topic.messages.length === 0) {
-      return;
+      return Promise.resolve();
     }
-
-    // Clear previous decoded images and revoke their URLs
-    this.decodedImages.forEach((image) => {
-      URL.revokeObjectURL(image.url);
-    });
-    this.decodedImages = [];
 
     this.isDecoding = true;
 
-    // Process each message
-    const processPromises = topic.messages.map((message) => {
-      if (!message || !message.data || !message.data.data) {
-        return Promise.resolve();
-      }
+    // Clear previous images
+    this.decodedImages = [];
 
-      const imageData = message.data.data;
+    // Create a progress indicator
+    let processedCount = 0;
+    const totalImages = topic.messages.filter(m => m?.data?.data).length;
 
-      // If we have image data, process it
-      if (typeof imageData === 'string') {
-        return this.imageDecodingService
-          .convertToBGR8JpegImage(imageData)
-          .then((blob) => {
-            // Create a URL for the blob
-            const url = URL.createObjectURL(blob);
-            this.decodedImages.push({
-              url,
-              timestamp: message.timestamp || 0,
-            });
-          })
-          .catch((error) => {
-            console.error('Error decoding image:', error);
+    // Process images in batches to avoid UI freezing
+    const batchSize = 5; // Process 5 images at a time
+    const batches: Array<Array<any>> = [];
+
+    // Split messages into batches
+    for (let i = 0; i < topic.messages.length; i += batchSize) {
+      batches.push(topic.messages.slice(i, i + batchSize));
+    }
+
+    // Process each batch sequentially
+    return batches.reduce<Promise<void>>(
+      (previousPromise, currentBatch) =>
+        previousPromise.then(() => {
+          // Process all messages in this batch in parallel
+          const batchPromises = currentBatch.map(message => {
+            if (!message || !message.data || !message.data.data) {
+              return Promise.resolve();
+            }
+
+            const imageData = message.data.data;
+
+            // If we have image data, process it
+            if (typeof imageData === 'string') {
+              return this.imageDecodingService
+                .convertToBGR8JpegImage(imageData)
+                .then((blob) => {
+                  // Create a URL for the blob
+                  const url = URL.createObjectURL(blob);
+                  this.decodedImages.push({
+                    url,
+                    timestamp: message.timestamp || 0,
+                  });
+
+                  // Update progress
+                  processedCount++;
+                  if (processedCount % 10 === 0 || processedCount === totalImages) {
+                    console.log(`Processed ${processedCount}/${totalImages} images`);
+                  }
+                })
+                .catch((error) => {
+                  console.error('Error decoding image:', error);
+                });
+            }
+
+            return Promise.resolve();
           });
-      }
 
-      return Promise.resolve();
-    });
-
-    // When all images are processed
-    Promise.all(processPromises)
+          return Promise.all(batchPromises).then(() => {
+            // This explicit return of void helps TypeScript understand the return type
+            return;
+          });
+        }),
+      Promise.resolve()
+    )
       .then(() => {
         // Sort images by timestamp
         this.decodedImages.sort((a, b) => a.timestamp - b.timestamp);
@@ -129,10 +154,7 @@ export class CameraViewComponent implements OnInit, OnDestroy {
         }
 
         this.isDecoding = false;
-      })
-      .catch((error) => {
-        console.error('Error processing images:', error);
-        this.isDecoding = false;
+        return;
       });
   }
 

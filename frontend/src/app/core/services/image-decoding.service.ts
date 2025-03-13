@@ -4,7 +4,77 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class ImageDecodingService {
-  constructor() { }
+  private worker: Worker | null = null;
+  private taskId = 0;
+  private taskCallbacks = new Map<number, { resolve: Function, reject: Function }>();
+
+  constructor() {
+    this.initWorker();
+  }
+
+  /**
+   * Initializes the Web Worker for image processing
+   */
+  private initWorker(): void {
+    if (typeof Worker !== 'undefined') {
+      // Create a new worker
+      this.worker = new Worker(new URL('../../../assets/image-decoder.worker.js', import.meta.url), { type: 'module' });
+      
+      // Set up the message handler
+      this.worker.onmessage = (event) => {
+        const { id, success, result, error } = event.data;
+        const callbacks = this.taskCallbacks.get(id);
+        
+        if (callbacks) {
+          if (success) {
+            callbacks.resolve(result);
+          } else {
+            callbacks.reject(new Error(error));
+          }
+          this.taskCallbacks.delete(id);
+        }
+      };
+      
+      // Handle worker errors
+      this.worker.onerror = (error) => {
+        console.error('Worker error:', error);
+        // Attempt to restart the worker
+        this.terminateWorker();
+        this.initWorker();
+      };
+    }
+  }
+
+  /**
+   * Terminates the Web Worker
+   */
+  private terminateWorker(): void {
+    if (this.worker) {
+      this.worker.terminate();
+      this.worker = null;
+    }
+  }
+
+  /**
+   * Sends a task to the worker and returns a promise
+   * @param action The action to perform
+   * @param data The data to process
+   * @returns A promise that resolves with the result
+   */
+  private sendToWorker<T>(action: string, data: any): Promise<T> {
+    return new Promise((resolve, reject) => {
+      if (!this.worker) {
+        // Fallback to synchronous processing if worker is not available
+        reject(new Error('Web Worker is not available'));
+        return;
+      }
+      
+      const id = this.taskId++;
+      this.taskCallbacks.set(id, { resolve, reject });
+      
+      this.worker.postMessage({ id, action, data });
+    });
+  }
 
   /**
    * Converts a string representation of image data to a JPEG Blob
@@ -12,10 +82,58 @@ export class ImageDecodingService {
    * @returns The JPEG image as a Blob
    */
   convertToBGR8JpegImage(data: string): Promise<Blob> {
+    // If worker is not available, fall back to synchronous processing
+    if (!this.worker) {
+      return this.convertToBGR8JpegImageSync(data);
+    }
+    
+    return new Promise(async (resolve, reject) => {
+      try {
+        let type: string;
+        
+        // Determine the type of data
+        if (typeof data === 'string') {
+          if (data.startsWith("b'") && data.endsWith("'")) {
+            type = 'pythonByteString';
+          } else {
+            // Try to determine if it's base64
+            try {
+              atob(data); // This will throw if not valid base64
+              type = 'base64';
+            } catch (e) {
+              type = 'raw';
+            }
+          }
+        } else {
+          reject(new Error('Data must be a string'));
+          return;
+        }
+        
+        // Send to worker for processing
+        const arrayBuffer = await this.sendToWorker<ArrayBuffer>('createBlob', {
+          data,
+          type
+        });
+        
+        // Create a Blob from the ArrayBuffer
+        const blob = new Blob([arrayBuffer], { type: 'image/jpeg' });
+        resolve(blob);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  /**
+   * Synchronous fallback method for image conversion
+   * @param data The string representation of image data
+   * @returns A Promise that resolves with the Blob
+   */
+  private convertToBGR8JpegImageSync(data: string): Promise<Blob> {
     return new Promise((resolve, reject) => {
       try {
         let binaryData: Uint8Array;
-
+        
         if (typeof data === 'string') {
           if (data.startsWith("b'") && data.endsWith("'")) {
             // Handle Python-style byte string (b'...)
