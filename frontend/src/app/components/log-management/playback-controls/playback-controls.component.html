@@ -44,6 +44,7 @@
       optionValue="value"
       optionLabel="name"
       [(ngModel)]="selectedSpeed"
+      [disabled]="!sessionState()?.start_time"
       (onChange)="onSpeedChange($event)"
     />
   </div>
