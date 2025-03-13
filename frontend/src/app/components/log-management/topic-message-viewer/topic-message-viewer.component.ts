@@ -20,7 +20,7 @@ export class TopicMessageViewerComponent {
 
   // Current message being displayed
   currentMessage: TopicMessage | null = null;
-  
+
   // Current playback position
   currentPlaybackPosition = 0;
 
@@ -31,18 +31,18 @@ export class TopicMessageViewerComponent {
     // Subscribe to the current message from the playback service
     this.playbackService.currentMessage$
       .pipe(untilDestroyed(this))
-      .subscribe(message => {
+      .subscribe((message) => {
         this.currentMessage = message;
       });
-      
+
     // Subscribe to the playback position
     this.playbackService.$playbackValue
       .pipe(untilDestroyed(this))
-      .subscribe(position => {
+      .subscribe((position) => {
         this.currentPlaybackPosition = position;
       });
   }
-  
+
   /**
    * Format a timestamp for display
    * @param timestamp Timestamp in milliseconds
@@ -50,8 +50,12 @@ export class TopicMessageViewerComponent {
    */
   formatTimestamp(timestamp: number | undefined): string {
     if (!timestamp) return 'N/A';
-    
+
     const date = new Date(timestamp);
-    return date.toLocaleTimeString() + '.' + date.getMilliseconds().toString().padStart(3, '0');
+    return (
+      date.toISOString() +
+      '.' +
+      date.getMilliseconds().toString().padStart(3, '0')
+    );
   }
 }

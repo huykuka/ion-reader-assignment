@@ -1,4 +1,4 @@
-import { Injectable, effect } from '@angular/core';
+import { Injectable, effect, inject } from '@angular/core';
 import { BehaviorSubject, Observable, Subject, interval, NEVER } from 'rxjs';
 import {
   scan,
@@ -9,6 +9,12 @@ import {
 } from 'rxjs/operators';
 import { Topic, TopicMessage } from '../../core/models/topic.model';
 import { TopicService } from '../state/topic.service';
+import { SessionService } from '../state/session.service';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+
+// Extend dayjs with the UTC plugin
+dayjs.extend(utc);
 
 @Injectable({
   providedIn: 'root',
@@ -54,7 +60,10 @@ export class PlaybackService {
   // Total duration in seconds
   private totalDuration = 0;
 
-  constructor(private topicService: TopicService) {
+  topicService = inject(TopicService);
+  sessionService = inject(SessionService);
+
+  constructor() {
     // Initialize the playback stream
     this.playback$ = this.createPlaybackStream();
 
@@ -174,7 +183,9 @@ export class PlaybackService {
     }
 
     // Convert playback position to milliseconds (assuming playbackPosition is in seconds)
-    const targetTimestamp = playbackPosition * 1000;
+    const targetTimestamp =
+      playbackPosition * 1000 +
+      dayjs.utc(this.sessionService.getSession()?.start_time).valueOf();
 
     // Find the message with the closest timestamp
     let closestMessage: TopicMessage | null = null;
@@ -182,7 +193,8 @@ export class PlaybackService {
 
     for (const message of topic.messages) {
       if (message.timestamp) {
-        const difference = Math.abs(message.timestamp - targetTimestamp);
+        const messageTimestamp = dayjs(message.timestamp).valueOf();
+        const difference = Math.abs(messageTimestamp - targetTimestamp);
         if (difference < minDifference) {
           minDifference = difference;
           closestMessage = message;
