@@ -42,20 +42,4 @@ export class TopicMessageViewerComponent {
         this.currentPlaybackPosition = position;
       });
   }
-
-  /**
-   * Format a timestamp for display
-   * @param timestamp Timestamp in milliseconds
-   * @returns Formatted timestamp string
-   */
-  formatTimestamp(timestamp: number | undefined): string {
-    if (!timestamp) return 'N/A';
-
-    const date = new Date(timestamp);
-    return (
-      date.toISOString() +
-      '.' +
-      date.getMilliseconds().toString().padStart(3, '0')
-    );
-  }
 }

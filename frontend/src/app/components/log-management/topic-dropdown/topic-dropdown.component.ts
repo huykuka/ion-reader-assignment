@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, effect, inject } from '@angular/core';
 import { SharedModule } from '../../../shared/shared/shared.module';
 import { Topic } from '../../../core/models/topic.model';
 import { TopicService } from '../../../services/state/topic.service';
@@ -14,6 +14,15 @@ export class TopicDropdownComponent {
 
   // Computed values
   selectedTopic = computed(() => this.topicService.state().selectedTopic);
+  topics = computed(() => this.topicService.state().topics);
+
+  constructor() {
+    effect(() => {
+      if (this.topics()) {
+        this.topicService.setSelectedTopic(this.topics()![0]);
+      }
+    });
+  }
 
   // Readable topics (filtering out binary/compressed topics)
   readableTopics = computed(() => {

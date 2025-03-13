@@ -42,6 +42,7 @@ export class PlaybackService {
   // Stream for current playback position
   $playbackValue = new BehaviorSubject<number>(0);
 
+  private manualPositionChange = false;
   // Stream for playback status (playing or paused)
   private $isPlaying = new BehaviorSubject<boolean>(false);
 
@@ -108,6 +109,12 @@ export class PlaybackService {
               startWith(null),
               // Increment the playback value
               scan((acc) => {
+                // If there was a manual position change, use that value instead
+                if (this.manualPositionChange) {
+                  this.manualPositionChange = false;
+                  return this.$playbackValue.getValue();
+                }
+
                 // Increment by a small amount adjusted for speed
                 const newValue = acc + 0.1 * speed;
                 // Ensure we don't exceed the total duration

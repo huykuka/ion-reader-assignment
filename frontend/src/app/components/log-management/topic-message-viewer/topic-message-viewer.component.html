@@ -17,7 +17,9 @@
       {{ currentPlaybackPosition.toFixed(2) }} seconds
       <span class="ml-2 font-medium" *ngIf="currentMessage">
         <span class="font-medium">Message Timestamp:</span>
-        {{ formatTimestamp(currentMessage.timestamp) }}
+        {{
+          currentMessage.timestamp | date : "yyyy-MM-dd HH:mm:ss.SSS" : "UTC"
+        }}
       </span>
     </div>
 
