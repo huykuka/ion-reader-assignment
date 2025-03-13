@@ -8,6 +8,8 @@ import { TableModule } from 'primeng/table';
 import { BadgeModule } from 'primeng/badge';
 import { SelectModule } from 'primeng/select';
 import { FloatLabelModule } from 'primeng/floatlabel';
+import { SliderModule } from 'primeng/slider';
+import { CardModule } from 'primeng/card';
 
 const PRIMENG_MODULES = [
   RippleModule,
@@ -18,6 +20,8 @@ const PRIMENG_MODULES = [
   FloatLabelModule,
   BadgeModule,
   SelectModule,
+  SliderModule,
+  CardModule,
 ];
 @NgModule({
   declarations: [],

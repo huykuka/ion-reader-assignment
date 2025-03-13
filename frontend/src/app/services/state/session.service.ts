@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { SignalsSimpleStoreService } from '../core/services';
-import { SessionInformation } from '../core/models';
+import { SignalsSimpleStoreService } from '../../core/services';
+import { SessionInformation } from '../../core/models';
 
 export interface SessionState {
   session: any;

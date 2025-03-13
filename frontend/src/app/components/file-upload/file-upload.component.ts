@@ -1,9 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { SharedModule } from '../../shared/shared/shared.module';
 import { RobotStateService, SessionService } from '../../services';
-import { FileParserService } from '../../services/file-parser.service';
+import { FileParserService } from '../../services/actions/file-parser.service';
 import { IoFile } from '../../core/models';
-import { TopicService } from '../../services/topic.service';
+import { TopicService } from '../../services/state/topic.service';
 
 @Component({
   selector: 'app-file-upload',

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Topic } from '../core/models/topic.model';
-import { SignalsSimpleStoreService } from '../core/services';
+import { Topic } from '../../core/models/topic.model';
+import { SignalsSimpleStoreService } from '../../core/services';
 
 interface TopicState {
   topics: Topic[] | null;

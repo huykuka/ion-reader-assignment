@@ -1,24 +1,43 @@
-<p-floatlabel variant="on">
-  <p-select
-    [options]="topicService.state().topics || []"
-    optionLabel="topicName"
-    [filter]="true"
-    filterBy="topicName"
-    [showClear]="true"
-    [placeholder]="
-      topicService.state().topics?.length
-        ? 'Select a Topic (' + topicService.state().topics?.length + ' topics)'
-        : 'No topics available'
-    "
-    [disabled]="!topicService.state().topics?.length"
-  >
-    <ng-template #selectedItem let-selectedTopic>
-      <div class="flex items-center gap-2">
-        <div>{{ selectedTopic.topicName }}</div>
-      </div>
-    </ng-template>
-    <ng-template #emptyFilter>
-      <div class="p-2 text-gray-500">No matching topics found</div>
-    </ng-template>
-  </p-select>
-</p-floatlabel>
+<!-- Topic Selection -->
+<div class="mb-4">
+  <p-floatlabel variant="on">
+    <p-select
+      [options]="readableTopics()"
+      optionLabel="topicName"
+      [filter]="true"
+      filterBy="topicName"
+      [showClear]="true"
+      [placeholder]="
+        readableTopics().length
+          ? 'Select a Topic (' + readableTopics().length + ' topics)'
+          : 'No readable topics available'
+      "
+      [disabled]="!readableTopics().length"
+      (onChange)="onTopicChange($event.value)"
+    >
+      <ng-template #selectedItem let-selectedTopic>
+        <div class="flex items-center gap-2">
+          <div>{{ selectedTopic.topicName }}</div>
+          <span
+            class="text-xs bg-gray-200 text-gray-700 rounded-full px-2 py-0.5"
+          >
+            {{ selectedTopic.messages?.length || 0 }}
+          </span>
+        </div>
+      </ng-template>
+      <ng-template #item let-topic>
+        <div class="flex items-center justify-between">
+          <div>{{ topic.topicName }}</div>
+          <span
+            class="text-xs bg-gray-200 text-gray-700 rounded-full px-2 py-0.5"
+          >
+            {{ topic.messages?.length || 0 }}
+          </span>
+        </div>
+      </ng-template>
+      <ng-template #emptyFilter>
+        <div class="p-2 text-gray-500">No matching topics found</div>
+      </ng-template>
+    </p-select>
+  </p-floatlabel>
+</div>

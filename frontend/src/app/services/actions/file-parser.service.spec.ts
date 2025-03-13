@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import * as ion from 'ion-js';
 import { FileParserService } from './file-parser.service';
-import { IoFile } from '../core/models/io-file.interface';
-import { RobotConfig, RobotInfo } from '../core/models/robot.model';
-import { SessionInformation } from '../core/models/session.model';
+import { IoFile } from '../../core/models/io-file.interface';
+import { RobotConfig, RobotInfo } from '../../core/models/robot.model';
+import { SessionInformation } from '../../core/models/session.model';
 
 describe('FileParserService', () => {
   let service: FileParserService;
@@ -20,16 +20,24 @@ describe('FileParserService', () => {
   describe('parseIonData', () => {
     it('should reject with error for empty data', async () => {
       const emptyBuffer = new ArrayBuffer(0);
-      
-      await expectAsync(service.parseIonData(emptyBuffer)).toBeRejectedWithError('Invalid or empty data provided');
+
+      await expectAsync(
+        service.parseIonData(emptyBuffer)
+      ).toBeRejectedWithError('Invalid or empty data provided');
       expect(service['state']().parsing).toBeFalse();
-      expect(service['state']().error).toEqual('Invalid or empty data provided');
+      expect(service['state']().error).toEqual(
+        'Invalid or empty data provided'
+      );
     });
 
     it('should reject with error for null data', async () => {
-      await expectAsync(service.parseIonData(null as any)).toBeRejectedWithError('Invalid or empty data provided');
+      await expectAsync(
+        service.parseIonData(null as any)
+      ).toBeRejectedWithError('Invalid or empty data provided');
       expect(service['state']().parsing).toBeFalse();
-      expect(service['state']().error).toEqual('Invalid or empty data provided');
+      expect(service['state']().error).toEqual(
+        'Invalid or empty data provided'
+      );
     });
 
     it('should handle errors during parsing', async () => {
@@ -53,31 +61,31 @@ describe('FileParserService', () => {
           botConfig: {
             BOTTYPE: 'TestBot',
             LIDAR_MODEL: 'TestLidar',
-            ENABLE_IMU: true
+            ENABLE_IMU: true,
           } as RobotConfig,
           botInfo: {
             botID: 'test-bot-id',
             botName: 'TestBot',
-            enterpriseName: 'TestEnterprise'
+            enterpriseName: 'TestEnterprise',
           } as RobotInfo,
           sessionInfo: {
             sessionCode: 'test-session',
             session_id: 'test-id',
-            start_time: '2023-01-01T00:00:00Z'
-          } as SessionInformation
+            start_time: '2023-01-01T00:00:00Z',
+          } as SessionInformation,
         },
-        topics: []
+        topics: [],
       };
-      
+
       spyOn<any>(service, 'parseIonReader').and.returnValue(mockResult);
       spyOn<any>(service, 'isValidIoFile').and.returnValue(true);
-      
+
       // Create a minimal valid Ion buffer (just needs to pass the initial checks)
       const validBuffer = new ArrayBuffer(10);
       spyOn(ion, 'makeReader').and.returnValue({} as any);
 
       const result = await service.parseIonData(validBuffer);
-      
+
       expect(result).toEqual(mockResult);
       expect(service['state']().parsing).toBeFalse();
       expect(service['state']().error).toBeNull();
@@ -105,36 +113,36 @@ describe('FileParserService', () => {
   describe('parseIonReader', () => {
     it('should handle null values', () => {
       const mockReader = createMockReader([
-        { type: ion.IonTypes.NULL, value: null }
+        { type: ion.IonTypes.NULL, value: null },
       ]);
-      
+
       const result = service.parseIonReader(mockReader);
       expect(result).toBeNull();
     });
 
     it('should handle boolean values', () => {
       const mockReader = createMockReader([
-        { type: ion.IonTypes.BOOL, value: true }
+        { type: ion.IonTypes.BOOL, value: true },
       ]);
-      
+
       const result = service.parseIonReader(mockReader);
       expect(result).toBeTrue();
     });
 
     it('should handle number values', () => {
       const mockReader = createMockReader([
-        { type: ion.IonTypes.INT, value: 42 }
+        { type: ion.IonTypes.INT, value: 42 },
       ]);
-      
+
       const result = service.parseIonReader(mockReader);
       expect(result).toBe(42);
     });
 
     it('should handle string values', () => {
       const mockReader = createMockReader([
-        { type: ion.IonTypes.STRING, value: 'test' }
+        { type: ion.IonTypes.STRING, value: 'test' },
       ]);
-      
+
       const result = service.parseIonReader(mockReader);
       expect(result).toBe('test');
     });
@@ -142,9 +150,9 @@ describe('FileParserService', () => {
     it('should handle binary data (BLOB)', () => {
       const binaryData = new Uint8Array([1, 2, 3, 4, 5]);
       const mockReader = createMockReader([
-        { type: ion.IonTypes.BLOB, value: binaryData, isBinary: true }
+        { type: ion.IonTypes.BLOB, value: binaryData, isBinary: true },
       ]);
-      
+
       const result = service.parseIonReader(mockReader);
       expect(result).toEqual(binaryData);
     });
@@ -152,9 +160,9 @@ describe('FileParserService', () => {
     it('should handle binary data (CLOB)', () => {
       const binaryData = new Uint8Array([65, 66, 67, 68]); // ASCII for "ABCD"
       const mockReader = createMockReader([
-        { type: ion.IonTypes.CLOB, value: binaryData, isBinary: true }
+        { type: ion.IonTypes.CLOB, value: binaryData, isBinary: true },
       ]);
-      
+
       const result = service.parseIonReader(mockReader);
       expect(result).toEqual(binaryData);
     });
@@ -163,9 +171,9 @@ describe('FileParserService', () => {
       const mockReader = createMockReader([
         { type: ion.IonTypes.INT, value: 1 },
         { type: ion.IonTypes.INT, value: 2 },
-        { type: ion.IonTypes.INT, value: 3 }
+        { type: ion.IonTypes.INT, value: 3 },
       ]);
-      
+
       const result = service.parseIonReader(mockReader);
       expect(result).toEqual([1, 2, 3]);
     });
@@ -173,12 +181,12 @@ describe('FileParserService', () => {
     it('should handle list values', () => {
       const mockListReader = createMockReader([
         { type: ion.IonTypes.INT, value: 1 },
-        { type: ion.IonTypes.INT, value: 2 }
+        { type: ion.IonTypes.INT, value: 2 },
       ]);
-      
+
       const mockReader = createMockReader([
-        { 
-          type: ion.IonTypes.LIST, 
+        {
+          type: ion.IonTypes.LIST,
           value: null,
           stepIn: () => {
             // Return the list reader when stepping in
@@ -189,10 +197,10 @@ describe('FileParserService', () => {
           stepOut: () => {
             // Reset the reader when stepping out
             mockReader.next = () => null;
-          }
-        }
+          },
+        },
       ]);
-      
+
       const result = service.parseIonReader(mockReader);
       expect(result).toEqual([1, 2]);
     });
@@ -200,15 +208,15 @@ describe('FileParserService', () => {
     it('should handle struct values', () => {
       let fieldNameIndex = 0;
       const fieldNames = ['key1', 'key2'];
-      
+
       const mockStructReader = createMockReader([
         { type: ion.IonTypes.INT, value: 1 },
-        { type: ion.IonTypes.STRING, value: 'value' }
+        { type: ion.IonTypes.STRING, value: 'value' },
       ]);
-      
+
       const mockReader = createMockReader([
-        { 
-          type: ion.IonTypes.STRUCT, 
+        {
+          type: ion.IonTypes.STRUCT,
           value: null,
           stepIn: () => {
             // Return the struct reader when stepping in
@@ -221,10 +229,10 @@ describe('FileParserService', () => {
           stepOut: () => {
             // Reset the reader when stepping out
             mockReader.next = () => null;
-          }
-        }
+          },
+        },
       ]);
-      
+
       const result = service.parseIonReader(mockReader);
       expect(result).toEqual({ key1: 1, key2: 'value' });
     });
@@ -233,9 +241,11 @@ describe('FileParserService', () => {
       const mockReader = {
         next: () => true,
         type: () => ion.IonTypes.INT,
-        numberValue: () => { throw new Error('Test error'); }
+        numberValue: () => {
+          throw new Error('Test error');
+        },
       } as any;
-      
+
       const result = service.parseIonReader(mockReader);
       expect(result).toContain('[Error:');
     });
@@ -249,9 +259,11 @@ describe('FileParserService', () => {
 
     it('should handle errors during parsing', () => {
       const mockReader = {
-        type: () => { throw new Error('Test error'); }
+        type: () => {
+          throw new Error('Test error');
+        },
       } as any;
-      
+
       const result = service['parseIonValue'](mockReader);
       expect(result).toContain('[Error:');
     });
@@ -261,9 +273,17 @@ describe('FileParserService', () => {
 /**
  * Helper function to create a mock Ion reader with predefined values
  */
-function createMockReader(values: Array<{ type: any, value: any, stepIn?: Function, stepOut?: Function, isBinary?: boolean }>) {
+function createMockReader(
+  values: Array<{
+    type: any;
+    value: any;
+    stepIn?: Function;
+    stepOut?: Function;
+    isBinary?: boolean;
+  }>
+) {
   let index = -1;
-  
+
   return {
     next: () => {
       index++;
@@ -275,9 +295,10 @@ function createMockReader(values: Array<{ type: any, value: any, stepIn?: Functi
     stringValue: () => values[index]?.value,
     decimalValue: () => values[index]?.value,
     timestampValue: () => values[index]?.value,
-    uInt8ArrayValue: () => values[index]?.isBinary ? values[index]?.value : new Uint8Array(),
+    uInt8ArrayValue: () =>
+      values[index]?.isBinary ? values[index]?.value : new Uint8Array(),
     fieldName: () => '',
     stepIn: values[index]?.stepIn || (() => {}),
-    stepOut: values[index]?.stepOut || (() => {})
+    stepOut: values[index]?.stepOut || (() => {}),
   } as any;
 }

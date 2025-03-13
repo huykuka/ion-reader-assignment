@@ -12,4 +12,5 @@ export interface TopicMessage {
     message?: string;
     state_id: any;
   };
+  timestamp?: number;
 }
