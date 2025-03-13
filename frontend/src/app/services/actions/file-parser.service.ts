@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as ion from 'ion-js';
-import { IoFile } from '../core/models/io-file.interface';
-import { SignalsSimpleStoreService } from '../core/services';
+import { IoFile } from '../../core/models/io-file.interface';
+import { SignalsSimpleStoreService } from '../../core/services';
 
 export interface FileParserState {
   parsing: boolean;

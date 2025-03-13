@@ -1,0 +1,58 @@
+<div class="playback-controls" *ngIf="endTime() > 0">
+  <!-- Time Display -->
+
+  <!-- Seeker Bar -->
+  <div class="seeker-bar mb-4 p-4">
+    <p-slider
+      type="range"
+      min="0"
+      [max]="totalTime()"
+      class="w-full"
+      [(ngModel)]="sliderValue"
+      [disabled]="!sessionState()?.start_time"
+      (onChange)="onSliderChange($event)"
+    />
+  </div>
+
+  <!-- Playback Buttons -->
+  <div class="playback-buttons flex items-center justify-between">
+    <div class="play-controls flex items-center gap-2">
+      <button
+        pButton
+        [label]="isPlaying ? 'Pause' : 'Play'"
+        [icon]="isPlaying ? 'pi pi-pause' : 'pi pi-play'"
+        [disabled]="!sessionState()?.start_time"
+        class="p-button-rounded"
+        (click)="onPlay()"
+      ></button>
+      <button
+        pButton
+        label="Reset"
+        icon="pi pi-refresh"
+        [disabled]="!sessionState()?.start_time"
+        class="p-button-rounded"
+        (click)="onReset()"
+      ></button>
+      <!-- <div class="flex justify-center items-center mb-2 text-sm h-full">
+        <span class="font-medium">{{ totalTime() }}</span>
+      </div> -->
+    </div>
+
+    <p-select
+      [options]="playbackService.availableSpeeds"
+      placeholder="Speed"
+      optionValue="value"
+      optionLabel="name"
+      [(ngModel)]="selectedSpeed"
+      [disabled]="!sessionState()?.start_time"
+      (onChange)="onSpeedChange($event)"
+    />
+  </div>
+</div>
+
+<div
+  *ngIf="endTime() === 0"
+  class="flex justify-center items-center p-4 text-gray-500"
+>
+  <span>No playback data available</span>
+</div>

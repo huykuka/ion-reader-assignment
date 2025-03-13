@@ -1,0 +1,14 @@
+.topic-message-viewer {
+  padding: 1rem;
+}
+
+.message-panel {
+  transition: all 0.3s ease;
+}
+
+// Ensure the pre tag for JSON display has proper styling
+pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}

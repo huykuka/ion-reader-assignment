@@ -1,5 +1,6 @@
 import { BotModel, MapModel, RobotConfig, RobotInfo } from './robot.model';
 import { SessionInformation } from './session.model';
+import { Topic } from './topic.model';
 
 export interface IoFile {
   metadata: {
@@ -11,5 +12,5 @@ export interface IoFile {
     botModel?: BotModel;
     mapData?: MapModel;
   };
-  topics: any[];
+  topics: Topic[];
 }

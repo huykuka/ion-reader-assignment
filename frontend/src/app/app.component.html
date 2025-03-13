@@ -1,14 +1,26 @@
-<div class="min-h-screen bg-gray-100 p-6">
-  <div class="max-w-6xl mx-auto">
+<div class="min-h-screen bg-gray-100 p-4 md:p-6">
+  <div class="max-w-full mx-auto">
     <!-- Header -->
-    <h1 class="text-2xl font-bold text-gray-800 mb-6">Ion Reader</h1>
+    <header class="mb-6">
+      <h1 class="text-3xl font-bold text-gray-800">Ion Reader</h1>
+    </header>
 
-    <!-- File Upload -->
-    <div class="mb-3 flex items-center justify-center">
-      <app-file-upload></app-file-upload>
+    <!-- Main Grid Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- File Upload - Full Width on Mobile, Top Row on Desktop -->
+      <div class="lg:col-span-12 bg-white rounded-lg shadow-sm p-4">
+        <app-file-upload></app-file-upload>
+      </div>
+
+      <!-- Session View - Right Side on Desktop, Full Width on Mobile -->
+      <div class="lg:col-span-7 lg:h-[calc(100vh-220px)] overflow-auto">
+        <app-robot-session-view></app-robot-session-view>
+      </div>
+
+      <!-- Log Management - Left Side on Desktop, Full Width on Mobile -->
+      <div class="lg:col-span-5 lg:h-[calc(100vh-220px)] overflow-auto">
+        <app-log-management></app-log-management>
+      </div>
     </div>
-
-    <!-- Session View -->
-    <app-robot-session-view></app-robot-session-view>
   </div>
 </div>

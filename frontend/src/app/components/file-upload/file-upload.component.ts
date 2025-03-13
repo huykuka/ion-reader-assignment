@@ -1,8 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { SharedModule } from '../../shared/shared/shared.module';
 import { RobotStateService, SessionService } from '../../services';
-import { FileParserService } from '../../services/file-parser.service';
+import { FileParserService } from '../../services/actions/file-parser.service';
 import { IoFile } from '../../core/models';
+import { TopicService } from '../../services/state/topic.service';
 
 @Component({
   selector: 'app-file-upload',
@@ -14,6 +15,7 @@ export class FileUploadComponent {
   fileParserService = inject(FileParserService);
   robotStateService = inject(RobotStateService);
   sessionService = inject(SessionService);
+  topicService = inject(TopicService);
 
   interval!: number;
 
@@ -52,8 +54,10 @@ export class FileUploadComponent {
 
   private extractDataToState(data: IoFile) {
     const { botConfig, botInfo, sessionInfo } = data.metadata;
+    const { topics } = data;
     botConfig ? this.robotStateService.setRobotConfig(botConfig) : null;
     botInfo ? this.robotStateService.setRobotInfo(botInfo) : null;
     sessionInfo ? this.sessionService.setSession(sessionInfo) : null;
+    topics ? this.topicService.setTopics(topics) : null;
   }
 }
