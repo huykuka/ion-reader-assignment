@@ -26,11 +26,11 @@
     <div class="message-content" *ngIf="currentMessage; else noCurrentMessage">
       <div class="flex justify-between items-center mb-2">
         <span class="text-sm font-medium text-gray-700">Message Content</span>
-        <button 
-          pButton 
-          pRipple 
-          icon="pi pi-copy" 
-          class="p-button-sm p-button-text" 
+        <button
+          pButton
+          pRipple
+          icon="pi pi-copy"
+          class="p-button-sm p-button-text"
           (click)="copyMessageToClipboard()"
           pTooltip="Copy to clipboard"
           tooltipPosition="left"
@@ -43,15 +43,18 @@
     </div>
 
     <ng-template #noCurrentMessage>
-      <div class="flex items-center justify-center h-[150px] text-gray-500">
-        <span>No message available at current playback position</span>
+      <div class="flex flex-col items-center justify-center p-8 text-gray-500">
+        <i class="pi pi-info-circle text-3xl mb-2"></i>
+        <p class="text-base m-0">
+          No message available at current playback position
+        </p>
       </div>
     </ng-template>
   </div>
 
-  <ng-template #noMessage>
+  <ng-template>
     <div class="flex items-center justify-center h-[200px] text-gray-500">
-      <span *ngIf="!selectedTopic()"
+      <span *ngIf="!selectedTopic() && !currentMessage"
         >Please select a topic to view messages</span
       >
     </div>
