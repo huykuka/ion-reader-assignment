@@ -7,7 +7,7 @@ import {
   tap,
   distinctUntilChanged,
 } from 'rxjs/operators';
-import { Topic, TopicMessage } from '../../core/models/topic.model';
+import { TopicMessage } from '../../core/models/topic.model';
 import { TopicService } from '../state/topic.service';
 import { SessionService } from '../state/session.service';
 import dayjs from 'dayjs';
@@ -71,7 +71,6 @@ export class PlaybackService {
     // Subscribe to the playback stream to update the playback value
     this.playback$.subscribe((value) => {
       this.$playbackValue.next(value);
-      this.updateCurrentMessage(value);
     });
 
     // Subscribe to play/pause actions
@@ -85,9 +84,6 @@ export class PlaybackService {
 
       // Clear the current message when topic changes
       this.$currentMessage.next(null);
-
-      // Update the message with the current playback position
-      this.updateCurrentMessage(this.$playbackValue.getValue());
     });
   }
 
@@ -156,7 +152,6 @@ export class PlaybackService {
 
   changePlaybackValue(value: number) {
     this.$playbackValue.next(value);
-    this.updateCurrentMessage(value);
   }
 
   changeSpeed(speed: number) {
@@ -173,60 +168,5 @@ export class PlaybackService {
 
   get speed$(): Observable<number> {
     return this.$speed.asObservable();
-  }
-
-  /**
-   * Find the message with the timestamp closest to the current playback position
-   * @param topic The topic containing messages
-   * @param playbackPosition The current playback position in seconds
-   * @returns The message with the closest timestamp
-   */
-  findClosestMessage(
-    topic: Topic | null,
-    playbackPosition: number
-  ): TopicMessage | null {
-    if (!topic || !topic.messages || topic.messages.length === 0) {
-      return null;
-    }
-
-    // Convert playback position to milliseconds (assuming playbackPosition is in seconds)
-    const targetTimestamp =
-      playbackPosition * 1000 +
-      dayjs.utc(this.sessionService.getSession()?.start_time).valueOf();
-
-    // Find the message with the closest timestamp
-    let closestMessage: TopicMessage | null = null;
-    let minDifference = Number.MAX_VALUE;
-
-    for (const message of topic.messages) {
-      if (message.timestamp) {
-        const messageTimestamp = dayjs(message.timestamp).valueOf();
-        const difference = Math.abs(messageTimestamp - targetTimestamp);
-        if (difference < minDifference) {
-          minDifference = difference;
-          closestMessage = message;
-        }
-      }
-    }
-
-    return closestMessage;
-  }
-
-  /**
-   * Get the current message based on playback position
-   * @returns Observable of the current message
-   */
-  get currentMessage$(): Observable<TopicMessage | null> {
-    return this.$currentMessage.asObservable();
-  }
-
-  /**
-   * Update the current message based on the playback position
-   * @param playbackPosition The current playback position
-   */
-  private updateCurrentMessage(playbackPosition: number): void {
-    const selectedTopic = this.topicService.state().selectedTopic;
-    const message = this.findClosestMessage(selectedTopic, playbackPosition);
-    this.$currentMessage.next(message);
   }
 }

@@ -4,7 +4,9 @@ import { SharedModule } from '../../../shared/shared/shared.module';
 import { TopicService } from '../../../services/state/topic.service';
 import { PlaybackService } from '../../../services/actions/playback.service';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { TopicMessage } from '../../../core/models/topic.model';
+import { Topic, TopicMessage } from '../../../core/models/topic.model';
+import dayjs from 'dayjs';
+import { SessionService } from '../../../services';
 
 @UntilDestroy()
 @Component({
@@ -17,6 +19,7 @@ import { TopicMessage } from '../../../core/models/topic.model';
 export class TopicMessageViewerComponent {
   topicService = inject(TopicService);
   playbackService = inject(PlaybackService);
+  sessionService = inject(SessionService);
 
   // Current message being displayed
   currentMessage: TopicMessage | null = null;
@@ -28,18 +31,52 @@ export class TopicMessageViewerComponent {
   selectedTopic = computed(() => this.topicService.state().selectedTopic);
 
   constructor() {
-    // Subscribe to the current message from the playback service
-    this.playbackService.currentMessage$
-      .pipe(untilDestroyed(this))
-      .subscribe((message) => {
-        this.currentMessage = message;
-      });
-
     // Subscribe to the playback position
     this.playbackService.$playbackValue
       .pipe(untilDestroyed(this))
       .subscribe((position) => {
         this.currentPlaybackPosition = position;
+        this.currentMessage = this.findClosestMessage(
+          this.selectedTopic(),
+          this.currentPlaybackPosition
+        );
       });
+  }
+
+  /**
+   * Find the message with the timestamp closest to the current playback position
+   * @param topic The topic containing messages
+   * @param playbackPosition The current playback position in seconds
+   * @returns The message with the closest timestamp
+   */
+  findClosestMessage(
+    topic: Topic | null,
+    playbackPosition: number
+  ): TopicMessage | null {
+    if (!topic || !topic.messages || topic.messages.length === 0) {
+      return null;
+    }
+
+    // Convert playback position to milliseconds (assuming playbackPosition is in seconds)
+    const targetTimestamp =
+      playbackPosition * 1000 +
+      dayjs.utc(this.sessionService.getSession()?.start_time).valueOf();
+
+    // Find the message with the closest timestamp
+    let closestMessage: TopicMessage | null = null;
+    let minDifference = Number.MAX_VALUE;
+
+    for (const message of topic.messages) {
+      if (message.timestamp) {
+        const messageTimestamp = dayjs(message.timestamp).valueOf();
+        const difference = Math.abs(messageTimestamp - targetTimestamp);
+        if (difference < minDifference) {
+          minDifference = difference;
+          closestMessage = message;
+        }
+      }
+    }
+
+    return closestMessage;
   }
 }
