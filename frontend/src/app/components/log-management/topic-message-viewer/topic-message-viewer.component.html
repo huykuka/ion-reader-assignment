@@ -52,11 +52,10 @@
     </ng-template>
   </div>
 
-  <ng-template>
-    <div class="flex items-center justify-center h-[200px] text-gray-500">
-      <span *ngIf="!selectedTopic() && !currentMessage"
-        >Please select a topic to view messages</span
-      >
-    </div>
-  </ng-template>
+  <div *ngIf="!selectedTopic()" class="flex flex-col items-center justify-center h-[200px] text-gray-500">
+    <i class="pi pi-inbox text-3xl mb-2"></i>
+    <p class="text-base m-0">
+      Please select a topic to view messages
+    </p>
+  </div>
 </div>
