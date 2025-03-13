@@ -34,6 +34,22 @@ export class LogConsoleComponent {
   // Auto-scroll flag
   shouldScrollToBottom = true;
 
+  // Filter properties
+  filterText = '';
+  allMessages: TopicMessage[] = [];
+
+  // Log level definitions
+  logLevels = [
+    { label: 'Debug', value: 1, style: 'secondary' },
+    { label: 'Info', value: 2, style: 'info' },
+    { label: 'Warn', value: 4, style: 'warning' },
+    { label: 'Error', value: 8, style: 'danger' },
+    { label: 'Fatal', value: 16, style: 'help' },
+  ];
+
+  // Selected log levels for filtering (empty means all levels are shown)
+  selectedLogLevels: number[] = [];
+
   constructor() {
     // Subscribe to the playback position
     this.playbackService.$playbackValue
@@ -69,6 +85,7 @@ export class LogConsoleComponent {
     );
 
     if (!rosoutTopic) {
+      this.allMessages = [];
       this.visibleMessages = [];
       return;
     }
@@ -77,6 +94,7 @@ export class LogConsoleComponent {
     const sessionStartTime = this.sessionService.getSession()?.start_time;
 
     if (!sessionStartTime) {
+      this.allMessages = [];
       this.visibleMessages = [];
       return;
     }
@@ -86,18 +104,19 @@ export class LogConsoleComponent {
       dayjs.utc(sessionStartTime).valueOf();
 
     // Filter messages by timestamp (only show messages up to current playback position)
-    this.visibleMessages = messages.filter((msg) => {
+    this.allMessages = messages.filter((msg) => {
       if (!msg.timestamp) return false;
       const messageTimestamp = dayjs(msg.timestamp).valueOf();
       return messageTimestamp <= targetTimestamp;
     });
 
     // Limit the number of messages to prevent performance issues
-    if (this.visibleMessages.length > 1000) {
-      this.visibleMessages = this.visibleMessages.slice(
-        this.visibleMessages.length - 1000
-      );
+    if (this.allMessages.length > 1000) {
+      this.allMessages = this.allMessages.slice(this.allMessages.length - 1000);
     }
+
+    // Apply any active filters
+    this.applyFilters();
 
     // Check if we should auto-scroll to the bottom
     if (
@@ -107,6 +126,51 @@ export class LogConsoleComponent {
       // Use setTimeout to ensure the DOM has updated before scrolling
       setTimeout(() => this.scrollToBottom(), 0);
     }
+  }
+
+  // Apply text and log level filters
+  applyFilters(): void {
+    // Start with all messages
+    let filteredMessages = [...this.allMessages];
+
+    // Apply text filter if any
+    if (this.filterText.trim()) {
+      const searchTerm = this.filterText.toLowerCase();
+      filteredMessages = filteredMessages.filter((msg) => {
+        const messageText = this.getMessageText(msg).toLowerCase();
+        return messageText.includes(searchTerm);
+      });
+    }
+
+    // Apply log level filter if any levels are selected
+    if (this.selectedLogLevels.length > 0) {
+      filteredMessages = filteredMessages.filter((msg) => {
+        const level = msg.data?.level || 0;
+        return this.selectedLogLevels.includes(level);
+      });
+    }
+
+    this.visibleMessages = filteredMessages;
+  }
+
+  // Toggle a log level in the filter
+  toggleLogLevel(level: number): void {
+    const index = this.selectedLogLevels.indexOf(level);
+    if (index === -1) {
+      // Add the level to selected levels
+      this.selectedLogLevels.push(level);
+    } else {
+      // Remove the level from selected levels
+      this.selectedLogLevels.splice(index, 1);
+    }
+    this.applyFilters();
+  }
+
+  // Clear all filters
+  clearFilters(): void {
+    this.filterText = '';
+    this.selectedLogLevels = [];
+    this.applyFilters();
   }
 
   // Get message text from data

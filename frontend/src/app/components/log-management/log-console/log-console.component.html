@@ -17,6 +17,43 @@
   </div>
 </div>
 
+<!-- Filter Controls -->
+<div class="flex flex-wrap gap-2 mb-3">
+  <div class="flex-1">
+    <span class="p-input-icon-left w-full">
+      <input
+        type="text"
+        pInputText
+        [(ngModel)]="filterText"
+        (input)="applyFilters()"
+        placeholder="Filter messages..."
+        class="w-full p-inputtext-sm"
+      />
+    </span>
+  </div>
+  <div class="flex gap-1">
+    <p-button
+      *ngFor="let level of logLevels"
+      [label]="level.label"
+      [styleClass]="
+        selectedLogLevels.includes(level.value)
+          ? 'p-button-' + level.style
+          : 'p-button-outlined p-button-' + level.style
+      "
+      size="small"
+      (onClick)="toggleLogLevel(level.value)"
+    ></p-button>
+  </div>
+  <p-button
+    icon="pi pi-filter-slash"
+    styleClass="p-button-outlined p-button-secondary"
+    size="small"
+    (onClick)="clearFilters()"
+    pTooltip="Clear all filters"
+    tooltipPosition="top"
+  ></p-button>
+</div>
+
 <div #tableContainer style="max-height: 400px; overflow-y: auto">
   <p-table
     #logTable
