@@ -1,0 +1,16 @@
+<div class="camera-view-container">
+  <div *ngIf="compresImageTopic()" class="image-container">
+    <div *ngIf="isDecoding" class="loading-container">
+      <div class="spinner"></div>
+      <p>Decoding images...</p>
+    </div>
+    <img [src]="imageUrl" *ngIf="imageUrl && !isDecoding" alt="Camera Feed" />
+    <div *ngIf="!imageUrl && !isDecoding" class="no-image">
+      <p>No image data available at current playback position.</p>
+    </div>
+  </div>
+  <div *ngIf="!compresImageTopic()" class="no-topic">
+    <p>No compressed image topic found.</p>
+    <p class="topic-info">Looking for topic with type containing 'compressedimage'</p>
+  </div>
+</div>

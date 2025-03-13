@@ -129,6 +129,7 @@ export class FileParserService extends SignalsSimpleStoreService<FileParserState
             case ion.IonTypes.BLOB:
               // Keep binary data for later use instead of using a placeholder
               const binaryValue = reader.uInt8ArrayValue();
+              console.log(binaryValue);
               results.push(binaryValue);
               break;
 
@@ -285,9 +286,8 @@ export class FileParserService extends SignalsSimpleStoreService<FileParserState
       }
     } catch (error) {
       console.error('Error in parseIonValue:', error);
-      return `[Error: ${
-        error instanceof Error ? error.message : 'Unknown error'
-      }]`;
+      return `[Error: ${error instanceof Error ? error.message : 'Unknown error'
+        }]`;
     }
   }
 }
