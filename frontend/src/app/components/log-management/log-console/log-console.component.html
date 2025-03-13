@@ -64,7 +64,7 @@
     <ng-template pTemplate="body" let-message>
       <tr>
         <td class="font-mono text-xs whitespace-nowrap">
-          {{ message.timestamp | date : "yyyy-MM-dd HH:mm:ss.SSS" : "UTC" }}
+          {{ message.timestamp | date : "yyyy-MM-dd HH:mm:ss.SSS" }}
         </td>
         <td
           [ngClass]="getMessageSeverityClass(message)"

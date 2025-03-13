@@ -1,0 +1,20 @@
+<div class="flex flex-col h-full">
+  <div class="flex-1 relative" #rendererContainer>
+    <div id="model-container" class="w-full h-full"></div>
+    <div
+      *ngIf="!hasModel()"
+      class="absolute inset-0 flex items-center justify-center"
+    >
+      <p class="text-gray-500">No 3D model available</p>
+    </div>
+  </div>
+  <div class="p-3 bg-gray-100 border-t flex justify-between items-center">
+    <span class="text-sm text-gray-600">3D Model Viewer</span>
+    <p-button
+      label="Download OBJ"
+      icon="pi pi-download"
+      (click)="downloadObjModel()"
+      [disabled]="!objData()"
+    ></p-button>
+  </div>
+</div>

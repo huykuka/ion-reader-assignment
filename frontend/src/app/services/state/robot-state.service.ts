@@ -5,6 +5,7 @@ import { SignalsSimpleStoreService } from '../../core/services';
 export interface RobotState {
   robotConfig: any;
   robotInfo: any;
+  botModel: any;
 }
 
 @Injectable({

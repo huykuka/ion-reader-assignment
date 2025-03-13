@@ -88,7 +88,6 @@ export class CameraViewComponent implements OnInit, OnDestroy {
 
     // Create a progress indicator
     let processedCount = 0;
-    const totalImages = topic.messages.filter(m => m?.data?.data).length;
 
     // Process images in batches to avoid UI freezing
     const batchSize = 5; // Process 5 images at a time
@@ -125,9 +124,7 @@ export class CameraViewComponent implements OnInit, OnDestroy {
 
                   // Update progress
                   processedCount++;
-                  if (processedCount % 10 === 0 || processedCount === totalImages) {
-                    console.log(`Processed ${processedCount}/${totalImages} images`);
-                  }
+
                 })
                 .catch((error) => {
                   console.error('Error decoding image:', error);

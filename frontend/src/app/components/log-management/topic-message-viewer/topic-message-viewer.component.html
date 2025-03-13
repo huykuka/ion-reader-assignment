@@ -46,10 +46,7 @@
               Timestamp:
             </td>
             <td class="py-2 px-3 text-gray-600">
-              {{
-                currentMessage.timestamp
-                  | date : "yyyy-MM-dd HH:mm:ss.SSS" : "UTC"
-              }}
+              {{ currentMessage.timestamp | date : "yyyy-MM-dd HH:mm:ss.SSS" }}
             </td>
           </tr>
         </tbody>
