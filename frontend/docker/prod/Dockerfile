@@ -23,7 +23,8 @@ FROM nginx:1.21.1-alpine
 # Add bash
 RUN apk add --no-cache bash
 
-COPY --from=builder /src/dist/ion-reader/browser/* /usr/share/nginx/html
+# Copy the entire browser directory to preserve folder structure
+COPY --from=builder /src/dist/ion-reader/browser /usr/share/nginx/html
 COPY ./docker/prod/entrypoint.sh /entrypoint.sh
 COPY ./docker/prod/nginx/default.conf /etc/nginx/conf.d/default.conf
 
