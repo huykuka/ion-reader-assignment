@@ -155,6 +155,15 @@ export class ThreedViewComponent implements AfterViewInit, OnDestroy {
         timestamp: timestamp as number
       }));
 
+    // Sort poses by timestamp
+    this.robotPoses.sort((a, b) => a.timestamp - b.timestamp);
+
+    console.log(`Loaded ${this.robotPoses.length} robot poses`);
+
+    // Set robot to initial position if model is already loaded
+    if (this.model && this.robotPoses.length > 0) {
+      this.updateModelPosition(this.robotPoses[0]);
+    }
   }
 
   /**
@@ -350,10 +359,13 @@ export class ThreedViewComponent implements AfterViewInit, OnDestroy {
         // Set model flag
         this.hasModel.set(true);
 
+        // If we have robot poses data, set the initial position
+        if (this.robotPoses.length > 0) {
+          this.updateModelPosition(this.robotPoses[0]);
+        }
         // If we have a current pose, update the model position
-        const currentPoseValue = this.currentPose();
-        if (currentPoseValue) {
-          this.updateModelPosition(currentPoseValue);
+        else if (this.currentPose()) {
+          this.updateModelPosition(this.currentPose()!);
         }
       })
       .catch(error => {
