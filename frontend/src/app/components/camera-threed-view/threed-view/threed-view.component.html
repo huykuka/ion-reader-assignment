@@ -1,4 +1,12 @@
 <div class="flex flex-col h-full rounded-md overflow-hidden">
+  <div class="p-3 bg-gray-100 border-b border-gray-200">
+    <div class="flex items-center justify-between w-full">
+      <span class="text-sm text-gray-600">3D Model Viewer</span>
+      <span *ngIf="hasMovementData()" class="text-xs text-gray-500">
+        Position: {{ currentPositionText() }}
+      </span>
+    </div>
+  </div>
   <div id="model-container" class="flex-1 relative">
     <!-- Loading overlay -->
     <div
@@ -36,13 +44,5 @@
     </div>
 
     <div #rendererContainer class="w-full h-full"></div>
-  </div>
-  <div class="p-3 bg-gray-100 border-t">
-    <div class="flex items-center justify-between w-full">
-      <span class="text-sm text-gray-600">3D Model Viewer</span>
-      <span *ngIf="hasMovementData()" class="text-xs text-gray-500">
-        Position: {{ currentPositionText() }}
-      </span>
-    </div>
   </div>
 </div>

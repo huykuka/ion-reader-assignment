@@ -41,7 +41,7 @@ export class CameraViewComponent implements OnInit, OnDestroy {
   );
 
   imageUrl: string | null = null;
-  currentTimestamp: number = 0; // Add timestamp property for debugging
+  currentTimestamp!: number; // Add timestamp property for debugging
   decodedImages: DecodedImage[] = [];
   isDecoding = false;
   private playbackSubscription: Subscription | null = null;

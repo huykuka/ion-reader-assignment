@@ -1,0 +1,23 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+::ng-deep .sticky-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  border-radius: 0.5rem;
+  
+  // Ensure the toolbar has proper padding
+  padding: 0.5rem;
+  
+  // Make sure the playback controls are centered
+  .p-toolbar-group-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+  }
+}
