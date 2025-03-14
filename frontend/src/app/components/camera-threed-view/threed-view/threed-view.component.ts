@@ -156,7 +156,6 @@ export class ThreedViewComponent implements AfterViewInit, OnDestroy {
     // Sort poses by timestamp
     this.robotPoses.sort((a, b) => a.timestamp - b.timestamp);
 
-    console.log(`Loaded ${this.robotPoses.length} robot poses`);
 
     // Set robot to initial position if model is already loaded
     if (this.model && this.robotPoses.length > 0) {
