@@ -1,0 +1,18 @@
+node_modules
+npm - debug.log
+yarn - error.log
+.DS_Store
+.git
+.gitignore
+.dockerignore
+.env
+.dockerfile
+LICENSE
+README.md
+.next
+cache
+Dockerfile
+pgdata
+.angular
+.vscode
+dist
