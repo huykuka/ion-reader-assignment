@@ -107,7 +107,6 @@ export class PlaybackService {
               scan((acc) => {
                 // If there was a manual position change, use that value instead
                 if (this.manualPositionChange) {
-                  console.log('manually');
                   this.manualPositionChange = false;
                   return this.$playbackValue.getValue();
                 }

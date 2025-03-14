@@ -1,28 +1,25 @@
 <div class="min-h-screen bg-gray-100 p-4 md:p-6">
   <div class="max-w-full mx-auto">
-    <!-- Header -->
-    <header class="mb-6">
-      <h1 class="text-3xl font-bold text-gray-800">Ion Reader</h1>
-    </header>
+    <!-- Sticky Toolbar - Will stay at top when scrolling -->
+    <div
+      class="sticky top-0 z-10 lg:col-span-12 bg-white rounded-lg shadow-sm p-4 mb-6"
+    >
+      <app-toolbar />
+    </div>
 
     <!-- Main Grid Layout -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-      <!-- File Upload - Full Width on Mobile, Top Row on Desktop -->
-      <div class="lg:col-span-12 bg-white rounded-lg shadow-sm p-4">
-        <app-toolbar />
-      </div>
-
       <!-- Session View - Right Side on Desktop, Full Width on Mobile -->
       <div class="lg:col-span-7 overflow-auto">
         <p-tabs value="1">
           <p-tablist>
             <p-tab value="0">
               <i class="pi pi-server"></i>
-              <span>Robot Session View</span>
+              <span class="font-bold">Robot Session View</span>
             </p-tab>
             <p-tab value="1">
               <i class="pi pi-camera"></i>
-              <span>Camera and 3D View</span>
+              <span class="font-bold">Camera and 3D View</span>
             </p-tab>
           </p-tablist>
           <p-tabpanels>
