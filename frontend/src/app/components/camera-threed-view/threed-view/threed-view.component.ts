@@ -3,9 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RobotStateService } from '../../../services/state/robot-state.service';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { ButtonModule } from 'primeng/button';
-import * as pako from 'pako';
+import { ModelProcessorService } from '../../../core/services/model-processor.service';
 
 @Component({
   selector: 'app-threed-view',
@@ -18,6 +17,7 @@ export class ThreedViewComponent implements AfterViewInit, OnDestroy {
   @ViewChild('rendererContainer') rendererContainer!: ElementRef;
 
   private robotStateService = inject(RobotStateService);
+  private modelProcessor = inject(ModelProcessorService);
 
   private scene!: THREE.Scene;
   private camera!: THREE.PerspectiveCamera;
@@ -37,13 +37,11 @@ export class ThreedViewComponent implements AfterViewInit, OnDestroy {
         console.log('Bot model data length:', botModel.data.length);
         // Only load if we have data and the component is initialized
         if (this.scene && this.camera && this.renderer) {
-          this.processModelData(botModel.data);
+          this.handleModelData(botModel.data);
         }
       }
     });
   }
-
-
 
   ngAfterViewInit() {
     this.initThreeJs();
@@ -52,7 +50,7 @@ export class ThreedViewComponent implements AfterViewInit, OnDestroy {
     setTimeout(() => {
       const currentState = this.robotStateService.state();
       if (currentState.botModel?.data) {
-        this.processModelData(currentState.botModel.data);
+        this.handleModelData(currentState.botModel.data);
       }
     }, 500);
   }
@@ -73,7 +71,6 @@ export class ThreedViewComponent implements AfterViewInit, OnDestroy {
   }
 
   private initThreeJs() {
-
     // Get container dimensions
     const container = this.rendererContainer.nativeElement;
     const width = container.clientWidth || 300;
@@ -141,105 +138,44 @@ export class ThreedViewComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  private processModelData(data: Uint8Array) {
-    console.log('Processing model data, length:', data.length);
+  /**
+   * Handles the model data by processing it and loading it into the scene
+   */
+  private handleModelData(data: Uint8Array) {
     if (!this.scene || !this.camera) {
       console.warn('Three.js not initialized yet');
       return;
     }
 
-    try {
-      // Try to decompress the data using pako (zlib/gzip)
-      let decompressedData: Uint8Array;
-      try {
-        // Try gzip decompression first
-        decompressedData = pako.inflate(data);
-      } catch (error) {
-        console.warn('Failed to decompress with pako.inflate, trying pako.ungzip', error);
-        try {
-          // Try raw deflate
-          decompressedData = pako.ungzip(data);
-        } catch (error2) {
-          console.warn('Failed to decompress with pako.ungzip, using original data', error2);
-          // If both decompression methods fail, use the original data
-          decompressedData = data;
-        }
-      }
-      // Convert the decompressed data to a string
-      const objString = this.uint8ArrayToString(decompressedData);
+    // Process the model data using the service
+    const objString = this.modelProcessor.processModelData(data);
 
-      // Store the OBJ data for download
+    if (objString) {
+      // Store the OBJ data
       this.objData.set(objString);
 
-      // Log the first part of the string to check format
-      console.log('OBJ String (first 200 chars):', objString.substring(0, 200));
-
-      // Check if it's a valid OBJ file by looking for common OBJ file markers
-      if (objString.includes('v ') && (objString.includes('f ') || objString.includes('vn '))) {
-        this.loadObjModel(objString);
-      } else {
-        console.warn('The data does not appear to be in OBJ format');
+      // Remove existing model if any
+      if (this.model) {
+        this.scene.remove(this.model);
+        this.model = null;
       }
-    } catch (error) {
-      console.error('Error processing model data:', error);
+
+      // Load the model
+      this.modelProcessor.loadObjModel(objString, this.scene)
+        .then(object => {
+          // Store reference to the model
+          this.model = object;
+
+          // Update camera to view the model
+          this.camera.lookAt(0, 0, 0);
+
+          // Set model flag
+          this.hasModel.set(true);
+        })
+        .catch(error => {
+          console.error('Failed to load model:', error);
+        });
     }
-  }
-
-  private loadObjModel(objString: string) {
-    // Remove existing model if any
-    if (this.model) {
-      this.scene.remove(this.model);
-      this.model = null;
-    }
-
-    // Create a blob from the OBJ string
-    const blob = new Blob([objString], { type: 'text/plain' });
-    const objectUrl = URL.createObjectURL(blob);
-
-    // Create OBJ loader
-    const loader = new OBJLoader();
-
-    // Load the model
-    loader.load(
-      objectUrl,
-      (object) => {
-        console.log('OBJ model loaded successfully', object);
-
-        // Center the model
-        const box = new THREE.Box3().setFromObject(object);
-        const center = box.getCenter(new THREE.Vector3());
-        const size = box.getSize(new THREE.Vector3());
-
-        // Normalize and center
-        const maxDim = Math.max(size.x, size.y, size.z);
-        const scale = 5 / maxDim;
-        object.scale.set(scale, scale, scale);
-        object.position.sub(center.multiplyScalar(scale));
-
-        // Add to scene
-        this.scene.add(object);
-        this.model = object;
-
-        // Update camera to view the model
-        this.camera.lookAt(0, 0, 0);
-
-        // Set model flag
-        this.hasModel.set(true);
-
-        // Clean up URL
-        URL.revokeObjectURL(objectUrl);
-      },
-      (error) => {
-        console.error('Error loading OBJ model:', error);
-        URL.revokeObjectURL(objectUrl);
-      }
-    );
-  }
-
-
-
-  private uint8ArrayToString(data: Uint8Array): string {
-    return new TextDecoder().decode(data);
   }
 
   private onWindowResize() {
@@ -263,5 +199,4 @@ export class ThreedViewComponent implements AfterViewInit, OnDestroy {
 
     this.renderer.render(this.scene, this.camera);
   }
-
 }
