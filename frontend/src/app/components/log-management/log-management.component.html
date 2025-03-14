@@ -1,11 +1,23 @@
 <div class="grid grid-cols-1 gap-4">
-  <p-card header="Topic Viewer">
+  <p-card>
+    <ng-template pTemplate="header">
+      <div class="flex items-center p-3 px-5 bg-gray-50">
+        <i class="pi pi-list text-ray-500 mr-2 text-xl"></i>
+        <span class="font-bold text-gray-800">Topic Viewer</span>
+      </div>
+    </ng-template>
     <app-topic-dropdown />
     <app-topic-message-viewer></app-topic-message-viewer>
   </p-card>
 
   <!-- Log Console -->
-  <p-card header="Log Console">
+  <p-card>
+    <ng-template pTemplate="header">
+      <div class="flex items-center p-3 px-5 bg-gray-50">
+        <i class="pi pi-megaphone text-gray-700 mr-2 text-xl"></i>
+        <span class="font-bold text-gray-800">Log Console</span>
+      </div>
+    </ng-template>
     <app-log-console></app-log-console>
   </p-card>
 </div>
