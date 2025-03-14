@@ -4,7 +4,7 @@ import { RobotStateService } from '../../../services/state/robot-state.service';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { ButtonModule } from 'primeng/button';
-import { ModelProcessorService } from '../../../core/services/model-processor.service';
+import { ModelProcessorService, ModelProcessingState } from '../../../core/services/model-processor.service';
 
 @Component({
   selector: 'app-threed-view',
@@ -28,6 +28,7 @@ export class ThreedViewComponent implements AfterViewInit, OnDestroy {
 
   hasModel = signal(false);
   objData = signal<string | null>(null);
+  modelState = this.modelProcessor.state;
 
   constructor() {
     // Watch for changes in the robot state
@@ -68,6 +69,20 @@ export class ThreedViewComponent implements AfterViewInit, OnDestroy {
 
     // Remove event listeners
     window.removeEventListener('resize', this.onWindowResize.bind(this));
+  }
+
+  /**
+   * Reset error state in the model processor
+   */
+  resetError() {
+    // Create a new state object with error set to null but keeping other properties
+    const currentState = this.modelState();
+    const newState: Partial<ModelProcessingState> = {
+      error: null
+    };
+    
+    // Access the private method through a workaround
+    (this.modelProcessor as any)['updateState'](newState);
   }
 
   private initThreeJs() {
@@ -148,34 +163,33 @@ export class ThreedViewComponent implements AfterViewInit, OnDestroy {
     }
 
     // Process the model data using the service
-    const objString = this.modelProcessor.processModelData(data);
-
-    if (objString) {
-      // Store the OBJ data
-      this.objData.set(objString);
-
-      // Remove existing model if any
-      if (this.model) {
-        this.scene.remove(this.model);
-        this.model = null;
-      }
-
-      // Load the model
-      this.modelProcessor.loadObjModel(objString, this.scene)
-        .then(object => {
-          // Store reference to the model
-          this.model = object;
-
-          // Update camera to view the model
-          this.camera.lookAt(0, 0, 0);
-
-          // Set model flag
-          this.hasModel.set(true);
-        })
-        .catch(error => {
-          console.error('Failed to load model:', error);
-        });
-    }
+    this.modelProcessor.processModelData(data)
+      .then(objString => {
+        // Store the OBJ data
+        this.objData.set(objString);
+        
+        // Remove existing model if any
+        if (this.model) {
+          this.scene.remove(this.model);
+          this.model = null;
+        }
+        
+        // Load the model
+        return this.modelProcessor.loadObjModel(objString, this.scene);
+      })
+      .then(object => {
+        // Store reference to the model
+        this.model = object;
+        
+        // Update camera to view the model
+        this.camera.lookAt(0, 0, 0);
+        
+        // Set model flag
+        this.hasModel.set(true);
+      })
+      .catch(error => {
+        console.error('Failed to load model:', error);
+      });
   }
 
   private onWindowResize() {
