@@ -1,0 +1,21 @@
+services:
+  frontend:
+    build:
+       context: frontend
+       dockerfile: docker/dev/Dockerfile
+    container_name: frontend
+    command: npm run start
+    develop:
+       watch:
+         - action: sync
+           path: ./frontend
+           target: /app
+           ignore:
+             - node_modules/
+             - docker/
+             - dist/
+             - documentation/
+         - action: rebuild
+           path: package.json
+    ports:
+      - "4200:4200"

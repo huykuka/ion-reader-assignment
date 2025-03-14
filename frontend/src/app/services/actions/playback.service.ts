@@ -5,7 +5,7 @@ import {
   startWith,
   switchMap,
   tap,
-  distinctUntilChanged,
+  distinctUntilChanged
 } from 'rxjs/operators';
 import { TopicMessage } from '../../core/models/topic.model';
 import { TopicService } from '../state/topic.service';
@@ -113,14 +113,20 @@ export class PlaybackService {
 
                 // Increment by a small amount adjusted for speed
                 const newValue = acc + 0.1 * speed;
-                // Ensure we don't exceed the total duration
-                return this.totalDuration > 0
-                  ? Math.min(newValue, this.totalDuration)
-                  : newValue;
+
+                // If we've exceeded the total duration, return exactly the total duration
+                if (this.totalDuration > 0 && newValue > this.totalDuration) {
+                  return this.totalDuration;
+                }
+
+                // Otherwise return the new value
+                return newValue;
               }, this.$playbackValue.getValue()),
               // Stop if we reach the end
               tap((value) => {
                 if (this.totalDuration > 0 && value >= this.totalDuration) {
+                  this.$playbackValue.next(this.totalDuration);
+                  // Then pause
                   this.pause();
                 }
               })
