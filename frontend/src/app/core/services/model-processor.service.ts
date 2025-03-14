@@ -55,14 +55,12 @@ export class ModelProcessorService {
     try {
       // Try gzip decompression first
       const decompressedData = pako.inflate(data);
-      console.log('Successfully decompressed with pako.inflate (gzip)');
       return decompressedData;
     } catch (error) {
       console.warn('Failed to decompress with pako.inflate, trying pako.ungzip', error);
       try {
         // Try raw deflate
         const decompressedData = pako.ungzip(data);
-        console.log('Successfully decompressed with pako.ungzip');
         return decompressedData;
       } catch (error2) {
         console.warn('Failed to decompress with pako.ungzip, using original data', error2);
@@ -98,24 +96,21 @@ export class ModelProcessorService {
           try {
             // Update progress
             this.updateState({ progress: 30 });
-            
+
             // Decompress the data
             const decompressedData = this.decompressData(data);
-            console.log('Decompressed data length:', decompressedData.length);
-            
+
             // Update progress
             this.updateState({ progress: 60 });
-            
+
             // Convert to string
             const objString = this.uint8ArrayToString(decompressedData);
-            
+
             // Update progress
             this.updateState({ progress: 80 });
-            
+
             // Validate if it's a proper OBJ format
             if (objString.includes('v ') && (objString.includes('f ') || objString.includes('vn '))) {
-              console.log('Valid OBJ format detected');
-              
               // Complete the loading
               this.updateState({ isLoading: false, progress: 100 });
               resolve(objString);
@@ -127,18 +122,18 @@ export class ModelProcessorService {
             }
           } catch (error) {
             console.error('Error processing model data:', error);
-            this.updateState({ 
-              isLoading: false, 
-              error: error instanceof Error ? error.message : 'Unknown error' 
+            this.updateState({
+              isLoading: false,
+              error: error instanceof Error ? error.message : 'Unknown error'
             });
             reject(error);
           }
         }, 10); // Small timeout to make it asynchronous
       } catch (error) {
         console.error('Error in processModelData:', error);
-        this.updateState({ 
-          isLoading: false, 
-          error: error instanceof Error ? error.message : 'Unknown error' 
+        this.updateState({
+          isLoading: false,
+          error: error instanceof Error ? error.message : 'Unknown error'
         });
         reject(error);
       }
@@ -167,8 +162,7 @@ export class ModelProcessorService {
       loader.load(
         objectUrl,
         (object) => {
-          console.log('OBJ model loaded successfully', object);
-          
+
           // Update progress
           this.updateState({ progress: 80 });
 
@@ -188,10 +182,10 @@ export class ModelProcessorService {
 
           // Clean up URL
           URL.revokeObjectURL(objectUrl);
-          
+
           // Complete the loading
           this.updateState({ isLoading: false, progress: 100 });
-          
+
           // Resolve with the loaded object
           resolve(object);
         },
@@ -205,9 +199,9 @@ export class ModelProcessorService {
         (error) => {
           console.error('Error loading OBJ model:', error);
           URL.revokeObjectURL(objectUrl);
-          this.updateState({ 
-            isLoading: false, 
-            error: error instanceof Error ? error.message : 'Error loading model' 
+          this.updateState({
+            isLoading: false,
+            error: error instanceof Error ? error.message : 'Error loading model'
           });
           reject(error);
         }
