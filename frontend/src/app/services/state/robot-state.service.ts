@@ -1,10 +1,13 @@
 import { Injectable } from '@angular/core';
 import { RobotConfig, RobotInfo } from '../../core/models';
 import { SignalsSimpleStoreService } from '../../core/services';
+import { WheelOdometry } from '../../core/models/wheel-odom.model';
 
 export interface RobotState {
   robotConfig: any;
   robotInfo: any;
+  botModel: any;
+  wheelOdometry?: WheelOdometry[];
 }
 
 @Injectable({
@@ -17,15 +20,22 @@ export class RobotStateService extends SignalsSimpleStoreService<RobotState> {
 
   setRobotConfig(config: RobotConfig) {
     this.setState({
-      ...this.state,
+      ...this.state(),
       robotConfig: config,
     });
   }
 
   setRobotInfo(info: RobotInfo) {
     this.setState({
-      ...this.state,
+      ...this.state(),
       robotInfo: info,
+    });
+  }
+
+  setWheelOdometry(data: WheelOdometry[]) {
+    this.setState({
+      ...this.state(),
+      wheelOdometry: data,
     });
   }
 
@@ -35,5 +45,9 @@ export class RobotStateService extends SignalsSimpleStoreService<RobotState> {
 
   getRobotInfo() {
     return this.state().robotInfo;
+  }
+
+  getWheelOdometry() {
+    return this.state().wheelOdometry || [];
   }
 }

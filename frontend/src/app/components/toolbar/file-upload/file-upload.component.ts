@@ -30,8 +30,6 @@ export class FileUploadComponent {
       // Define what happens when the file is loaded
       reader.onload = (e: any) => {
         const fileContent = e.target.result as ArrayBuffer;
-        console.log('File loaded, processing ION data...');
-
         this.fileParserService
           .parseIonData(fileContent)
           .then((data) => {
@@ -53,11 +51,12 @@ export class FileUploadComponent {
   }
 
   private extractDataToState(data: IoFile) {
-    const { botConfig, botInfo, sessionInfo } = data.metadata;
+    const { botConfig, botInfo, sessionInfo, botModel } = data.metadata;
     const { topics } = data;
     botConfig ? this.robotStateService.setRobotConfig(botConfig) : null;
     botInfo ? this.robotStateService.setRobotInfo(botInfo) : null;
     sessionInfo ? this.sessionService.setSession(sessionInfo) : null;
     topics ? this.topicService.setTopics(topics) : null;
+    botModel ? this.robotStateService.set('botModel', botModel) : null;
   }
 }

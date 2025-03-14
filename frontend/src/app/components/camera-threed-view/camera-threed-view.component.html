@@ -1,8 +1,4 @@
-<p-splitter [style]="{ height: '500px' }">
-  <ng-template #panel>
-    <app-camera-view></app-camera-view>
-  </ng-template>
-  <ng-template #panel>
-    <div class="flex items-center justify-center h-full">Panel 2</div>
-  </ng-template>
-</p-splitter>
+<div class="flex flex-col gap-4">
+  <app-camera-view></app-camera-view>
+  <app-threed-view></app-threed-view>
+</div>

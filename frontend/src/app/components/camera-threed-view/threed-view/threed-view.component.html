@@ -1,0 +1,48 @@
+<div class="flex flex-col h-full rounded-md overflow-hidden">
+  <div id="model-container" class="flex-1 relative">
+    <!-- Loading overlay -->
+    <div
+      *ngIf="modelState().isLoading"
+      class="absolute inset-0 bg-black bg-opacity-30 flex flex-col items-center justify-center z-10"
+    >
+      <div class="text-white mb-2">
+        <span *ngIf="modelState().progress < 100">Processing 3D Model...</span>
+        <span *ngIf="modelState().progress === 100">Rendering...</span>
+      </div>
+      <div class="w-64 bg-gray-200 rounded-full h-2.5">
+        <div
+          class="bg-blue-600 h-2.5 rounded-full"
+          [style.width.%]="modelState().progress"
+        ></div>
+      </div>
+      <div class="text-white mt-2">{{ modelState().progress }}%</div>
+    </div>
+
+    <!-- Error message -->
+    <div
+      *ngIf="modelState().error"
+      class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center z-10"
+    >
+      <div class="bg-white p-4 rounded-md shadow-lg max-w-md">
+        <h3 class="text-red-600 font-bold mb-2">Error Loading Model</h3>
+        <p>{{ modelState().error }}</p>
+        <button
+          class="mt-3 px-4 py-2 bg-blue-500 text-white rounded-md"
+          (click)="resetError()"
+        >
+          Dismiss
+        </button>
+      </div>
+    </div>
+
+    <div #rendererContainer class="w-full h-full"></div>
+  </div>
+  <div class="p-3 bg-gray-100 border-t">
+    <div class="flex items-center justify-between w-full">
+      <span class="text-sm text-gray-600">3D Model Viewer</span>
+      <span *ngIf="hasMovementData()" class="text-xs text-gray-500">
+        Position: {{ currentPositionText() }}
+      </span>
+    </div>
+  </div>
+</div>
