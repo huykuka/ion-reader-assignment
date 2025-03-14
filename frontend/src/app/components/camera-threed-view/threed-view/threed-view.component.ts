@@ -115,8 +115,6 @@ export class ThreedViewComponent implements AfterViewInit, OnDestroy {
       this.playbackSubscription.unsubscribe();
     }
 
-    // Remove event listeners
-    window.removeEventListener('resize', this.onWindowResize.bind(this));
   }
 
   /**
@@ -247,14 +245,27 @@ export class ThreedViewComponent implements AfterViewInit, OnDestroy {
     this.model.rotation.set(0, 0, 0);
 
 
-    this.model.rotateY(yaw);
-
-
-    // Add debugging to help fine-tune the rotation
-    console.log('Position:', position);
-    console.log('Yaw (radians):', yaw);
-    console.log('Model rotation:', this.model.rotation);
+    this.model.rotateY(yaw)
   }
+
+  /**
+   * Format the current position text for display
+   */
+  currentPositionText(): string {
+    const pose = this.currentPose();
+    if (!pose) return 'No position data';
+
+    const { x, y, z } = pose.pose.position;
+    return `X: ${x.toFixed(2)}, Y: ${y.toFixed(2)}, Z: ${z.toFixed(2)}`;
+  }
+
+  /**
+   * Check if movement data is available
+   */
+  hasMovementData(): boolean {
+    return this.robotPoses.length > 0;
+  }
+
 
   private initThreeJs() {
     // Get container dimensions
@@ -315,9 +326,6 @@ export class ThreedViewComponent implements AfterViewInit, OnDestroy {
       this.controls.enableZoom = true;
       this.controls.autoRotate = false;
 
-      // Handle window resize
-      window.addEventListener('resize', this.onWindowResize.bind(this));
-
       // Start animation loop
       this.animate();
     } else {
@@ -373,17 +381,6 @@ export class ThreedViewComponent implements AfterViewInit, OnDestroy {
       });
   }
 
-  private onWindowResize() {
-    // const container = this.rendererContainer.nativeElement;
-    // if (container) {
-    //   const width = container.clientWidth;
-    //   const height = container.clientHeight;
-
-    //   this.camera.aspect = width / height;
-    //   this.camera.updateProjectionMatrix();
-    //   this.renderer.setSize(width, height);
-    // }
-  }
 
   private animate() {
     this.animationFrameId = requestAnimationFrame(this.animate.bind(this));
