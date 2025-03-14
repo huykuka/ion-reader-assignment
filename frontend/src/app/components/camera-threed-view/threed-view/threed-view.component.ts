@@ -71,7 +71,7 @@ export class ThreedViewComponent implements AfterViewInit, OnDestroy {
     });
 
     // Subscribe to playback changes
-    this.playbackSubscription = this.playbackService.playback$.subscribe(
+    this.playbackSubscription = this.playbackService.$playbackValue.subscribe(
       (playbackValue) => this.updateRobotPoseOnPlayback(playbackValue)
     );
 
@@ -196,29 +196,55 @@ export class ThreedViewComponent implements AfterViewInit, OnDestroy {
    */
   private updateModelPosition(movementDate: RobotPose) {
     const { pose } = movementDate;
-    if (!this.model) return;
+    if (!this.model) return
 
-    // Convert ROS coordinate system to THREE.js coordinate system
-    // In ROS: X forward, Y left, Z up
-    // In THREE.js: X right, Y up, Z forward (negative)
+    // Apply a single transformation to convert from ROS to THREE.js coordinate system
+    // ROS: X forward, Y left, Z up
+    // THREE.js: X right, Y up, Z out of screen (toward viewer)
+
+    // We need to consider both:
+    // 1. The transformation from ROS to THREE.js coordinates
+    // 2. The initial orientation of the OBJ model
+
+    // Position transformation
     const position = new THREE.Vector3(
-      -pose.position.y,  // ROS Y -> THREE.js -X
-      pose.position.z,   // ROS Z -> THREE.js Y
-      -pose.position.x   // ROS X -> THREE.js -Z
+      pose.position.x,  // ROS X → THREE.js X
+      pose.position.z,  // ROS Z → THREE.js Y
+      -pose.position.y  // ROS -Y → THREE.js Z
     );
 
-    // Convert quaternion to Euler angles
-    const quaternion = new THREE.Quaternion(
+    // Get the quaternion from the pose
+    const rosQuaternion = new THREE.Quaternion(
       pose.orientation.x,
       pose.orientation.y,
       pose.orientation.z,
       pose.orientation.w
     );
-    const euler = new THREE.Euler().setFromQuaternion(quaternion);
 
-    // Update model position and rotation
+    // Convert the quaternion to Euler angles to make it easier to work with
+    const euler = new THREE.Euler().setFromQuaternion(rosQuaternion, 'XYZ');
+
+    // Extract the yaw (rotation around Z-axis in ROS)
+    // This is the main rotation for a ground robot
+    const yaw = euler.z;
+
+    // In THREE.js, we need to rotate around the Y-axis to match the yaw rotation
+    // We also need to adjust for the initial orientation of the model
+
+    // Apply position
     this.model.position.copy(position);
-    this.model.rotation.set(euler.x, euler.y, euler.z);
+
+    // Reset rotation first
+    this.model.rotation.set(0, 0, 0);
+
+
+    this.model.rotateY(yaw);
+
+
+    // Add debugging to help fine-tune the rotation
+    console.log('Position:', position);
+    console.log('Yaw (radians):', yaw);
+    console.log('Model rotation:', this.model.rotation);
   }
 
   private initThreeJs() {
@@ -230,6 +256,7 @@ export class ThreedViewComponent implements AfterViewInit, OnDestroy {
     // Create scene
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0xf0f0f0);
+
 
     // Add lighting
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
@@ -335,15 +362,15 @@ export class ThreedViewComponent implements AfterViewInit, OnDestroy {
   }
 
   private onWindowResize() {
-    const container = this.rendererContainer.nativeElement;
-    if (container) {
-      const width = container.clientWidth;
-      const height = container.clientHeight;
+    // const container = this.rendererContainer.nativeElement;
+    // if (container) {
+    //   const width = container.clientWidth;
+    //   const height = container.clientHeight;
 
-      this.camera.aspect = width / height;
-      this.camera.updateProjectionMatrix();
-      this.renderer.setSize(width, height);
-    }
+    //   this.camera.aspect = width / height;
+    //   this.camera.updateProjectionMatrix();
+    //   this.renderer.setSize(width, height);
+    // }
   }
 
   private animate() {
