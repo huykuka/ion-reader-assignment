@@ -7,16 +7,6 @@
     <div class="play-controls flex items-center gap-2">
       <button
         pButton
-        icon="pi pi-step-backward"
-        class="p-button-rounded p-button-secondary"
-        [disabled]="!sessionState()?.start_time"
-        (click)="onReset()"
-        pTooltip="Go to Start"
-        tooltipPosition="top"
-        size="small"
-      ></button>
-      <button
-        pButton
         [icon]="isPlaying ? 'pi pi-pause' : 'pi pi-play'"
         class="p-button-rounded p-button-primary"
         [disabled]="!sessionState()?.start_time"

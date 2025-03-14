@@ -1,4 +1,18 @@
-<div class="camera-view-container">
+<div
+  class="camera-view-container flex flex-col h-full rounded-md overflow-hidden"
+>
+  <div class="p-3 bg-gray-100 border-b border-gray-200 w-full">
+    <div class="flex items-center justify-between w-full">
+      <span class="text-sm text-gray-600">Video Feed</span>
+      <span class="text-xs text-gray-500">
+        {{
+          currentTimestamp
+            ?  `Timestamp: ${currentTimestamp | date : "yyyy-MM-dd HH:mm:ss.SSS"}`
+            : "No timestamp available"
+        }}
+      </span>
+    </div>
+  </div>
   <div *ngIf="compresImageTopic()" class="image-container">
     <div *ngIf="isDecoding" class="loading-container">
       <div class="spinner"></div>
@@ -6,12 +20,6 @@
     </div>
     <div *ngIf="imageUrl && !isDecoding" class="image-with-timestamp">
       <img [src]="imageUrl" alt="Camera Feed" />
-      <div class="timestamp-overlay">
-        <span
-          >Timestamp:
-          {{ currentTimestamp | date : "yyyy-MM-dd HH:mm:ss.SSS" }}</span
-        >
-      </div>
     </div>
     <div *ngIf="!imageUrl && !isDecoding" class="no-image">
       <p>No image data available at current playback position.</p>
