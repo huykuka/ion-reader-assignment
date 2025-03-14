@@ -14,6 +14,8 @@ import { FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToolbarModule } from 'primeng/toolbar';
 import { ClipboardModule } from 'ngx-clipboard';
+import { TabsModule } from 'primeng/tabs';
+import { SplitterModule } from 'primeng/splitter';
 
 const PRIMENG_MODULES = [
   RippleModule,
@@ -32,6 +34,8 @@ const PRIMENG_MODULES = [
   RippleModule,
   InputTextModule,
   ToolbarModule,
+  TabsModule,
+  SplitterModule
 ];
 
 const ANGULAR_MODULES = [FormsModule, CommonModule, ClipboardModule];
@@ -40,4 +44,4 @@ const ANGULAR_MODULES = [FormsModule, CommonModule, ClipboardModule];
   imports: [...ANGULAR_MODULES, ...PRIMENG_MODULES],
   exports: [...ANGULAR_MODULES, ...PRIMENG_MODULES],
 })
-export class SharedModule {}
+export class SharedModule { }

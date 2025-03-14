@@ -1,0 +1,26 @@
+<div class="camera-view-container">
+  <div *ngIf="compresImageTopic()" class="image-container">
+    <div *ngIf="isDecoding" class="loading-container">
+      <div class="spinner"></div>
+      <p>Decoding images...</p>
+    </div>
+    <div *ngIf="imageUrl && !isDecoding" class="image-with-timestamp">
+      <img [src]="imageUrl" alt="Camera Feed" />
+      <div class="timestamp-overlay">
+        <span
+          >Timestamp:
+          {{ currentTimestamp | date : "yyyy-MM-dd HH:mm:ss.SSS" }}</span
+        >
+      </div>
+    </div>
+    <div *ngIf="!imageUrl && !isDecoding" class="no-image">
+      <p>No image data available at current playback position.</p>
+    </div>
+  </div>
+  <div *ngIf="!compresImageTopic()" class="no-topic">
+    <p>No compressed image topic found.</p>
+    <p class="topic-info">
+      Looking for topic with type containing 'compressedimage'
+    </p>
+  </div>
+</div>

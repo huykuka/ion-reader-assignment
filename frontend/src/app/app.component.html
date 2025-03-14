@@ -14,7 +14,26 @@
 
       <!-- Session View - Right Side on Desktop, Full Width on Mobile -->
       <div class="lg:col-span-7 overflow-auto">
-        <app-robot-session-view></app-robot-session-view>
+        <p-tabs value="1">
+          <p-tablist>
+            <p-tab value="0">
+              <i class="pi pi-server"></i>
+              <span>Robot Session View</span>
+            </p-tab>
+            <p-tab value="1">
+              <i class="pi pi-camera"></i>
+              <span>Camera and 3D View</span>
+            </p-tab>
+          </p-tablist>
+          <p-tabpanels>
+            <p-tabpanel value="0">
+              <app-robot-session-view></app-robot-session-view>
+            </p-tabpanel>
+            <p-tabpanel value="1">
+              <app-camera-threed-view></app-camera-threed-view>
+            </p-tabpanel>
+          </p-tabpanels>
+        </p-tabs>
       </div>
 
       <!-- Log Management - Left Side on Desktop, Full Width on Mobile -->
