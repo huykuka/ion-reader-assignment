@@ -6,6 +6,7 @@ import Material from '@primeng/themes/material';
 import { routes } from './app.routes';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { definePreset } from '@primeng/themes';
+import { MessageService } from 'primeng/api';
 
 const MyPreset = definePreset(Material, {
   semantic: {
@@ -39,5 +40,6 @@ export const appConfig: ApplicationConfig = {
       }
     }),
     provideHttpClient(withInterceptorsFromDi()),
+    MessageService,
   ],
 };

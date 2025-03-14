@@ -7,6 +7,6 @@ import { PlaybackControlsComponent } from './playback-controls/playback-controls
   selector: 'app-toolbar',
   imports: [SharedModule, FileUploadComponent, PlaybackControlsComponent],
   templateUrl: './toolbar.component.html',
-  styleUrl: './toolbar.component.scss',
+  styleUrls: ['./toolbar.component.scss'],
 })
 export class ToolbarComponent {}

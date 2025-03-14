@@ -1,0 +1,12 @@
+<div class="header-container">
+  <div class="app-info">
+    <div class="app-icon">
+      <i class="pi pi-file-import"></i>
+    </div>
+    <h1 class="app-name">{{ appName | titlecase }}</h1>
+    <p-badge [value]="'v' + appVersion" severity="info" size="small"></p-badge>
+  </div>
+  <div class="file-upload-container">
+    <app-file-upload></app-file-upload>
+  </div>
+</div>
