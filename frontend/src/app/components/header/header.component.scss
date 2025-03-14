@@ -1,0 +1,90 @@
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.25rem;
+  background-color: #e9ecef;
+  border-bottom: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  font-family: "Roboto", "Segoe UI", sans-serif;
+  flex-wrap: wrap; /* Allow wrapping */
+  gap: 1rem; /* Add gap between wrapped elements */
+}
+
+.app-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0; /* Prevent shrinking */
+}
+
+.app-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: #1976d2;
+  color: white;
+  border-radius: 50%;
+  font-size: 1.25rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+  flex-shrink: 0; /* Prevent shrinking */
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+.app-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+  font-family: "Montserrat", "Segoe UI", sans-serif;
+  letter-spacing: 0.5px;
+  white-space: nowrap; /* Prevent text wrapping */
+  flex-shrink: 0; /* Prevent shrinking */
+}
+
+.file-upload-container {
+  display: flex;
+  align-items: center;
+  /* Remove margin-left since we're using gap in the container */
+}
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+  .header-container {
+    justify-content: center;
+  }
+  
+  .app-info {
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* Override some PrimeNG styles for the file upload button */
+:host ::ng-deep {
+  .p-fileupload-buttonbar {
+    background: transparent;
+    border: none;
+    padding: 0;
+  }
+
+  .p-fileupload .p-button {
+    background-color: #1976d2;
+    border-color: #1976d2;
+    font-family: "Roboto", "Segoe UI", sans-serif;
+    /* Allow text to wrap if needed */
+  }
+  
+  /* Ensure the badge doesn't shrink */
+  .p-badge {
+    flex-shrink: 0;
+  }
+}
+
+/* Badge styling will be handled by PrimeNG */

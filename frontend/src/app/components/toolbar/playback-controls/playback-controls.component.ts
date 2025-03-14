@@ -6,12 +6,13 @@ import dayjs from 'dayjs';
 import { PlaybackService } from '../../../services/actions/playback.service';
 import { firstValueFrom } from 'rxjs';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { TooltipModule } from 'primeng/tooltip';
 
 @UntilDestroy()
 @Component({
   selector: 'app-playback-controls',
   standalone: true,
-  imports: [CommonModule, SharedModule],
+  imports: [CommonModule, SharedModule, TooltipModule],
   templateUrl: './playback-controls.component.html',
   styleUrls: ['./playback-controls.component.scss'],
 })
@@ -88,5 +89,17 @@ export class PlaybackControlsComponent {
     } else {
       this.playbackService.pause();
     }
+  }
+
+  /**
+   * Format seconds into a readable time string (MM:SS)
+   */
+  formatTime(seconds: number): string {
+    if (!seconds) return '00:00';
+
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+
+    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
   }
 }
