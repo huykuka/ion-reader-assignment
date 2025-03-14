@@ -88,41 +88,6 @@ Before setting up Ion Reader, ensure you have the following installed:
 
 4. The application will automatically reload when you make changes to the source files.
 
-### Local Development Setup
-
-1. Clone the repository:
-
-   ```bash
-   git clone https://github.com/huykuka/ion-reader.git
-   cd ion-reader
-   ```
-
-2. Run the setup script:
-
-   ```bash
-   ./.bin/dev-setup.sh
-   ```
-
-3. Navigate to the frontend directory:
-
-   ```bash
-   cd frontend
-   ```
-
-4. Install dependencies:
-
-   ```bash
-   npm install --force
-   ```
-
-5. Start the development server:
-
-   ```bash
-   npm run start
-   ```
-
-6. Access the development server at [http://localhost:4200](http://localhost:4200)
-
 ## Building and Deploying
 
 ### Building the Docker Image Locally
