@@ -55,6 +55,7 @@ export class ThreedViewComponent implements AfterViewInit, OnDestroy {
   private animationFrameId: number | null = null;
   private playbackSubscription: Subscription | null = null;
   private robotPoses: RobotPose[] = [];
+  private resizeObserver: ResizeObserver | null = null;
 
   hasModel = signal(false);
   objData = signal<string | null>(null);
@@ -88,10 +89,11 @@ export class ThreedViewComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this.initThreeJs();
-
-    // Check if there's already model data in the state after Three.js is initialized
+    // Delay initialization to ensure the container has been properly sized
     setTimeout(() => {
+      this.initThreeJs();
+
+      // Check if there's already model data in the state after Three.js is initialized
       const currentState = this.robotStateService.state();
       if (currentState.botModel?.data) {
         this.handleModelData(currentState.botModel.data);
@@ -99,7 +101,13 @@ export class ThreedViewComponent implements AfterViewInit, OnDestroy {
 
       // Load robot poses if topics are available
       this.loadRobotPoses();
-    }, 500);
+
+      // Set up resize observer for the container
+      this.setupResizeObserver();
+
+      // Add window resize event listener
+      window.addEventListener('resize', this.handleWindowResize.bind(this));
+    }, 100);
   }
 
   ngOnDestroy() {
@@ -118,6 +126,75 @@ export class ThreedViewComponent implements AfterViewInit, OnDestroy {
       this.playbackSubscription.unsubscribe();
     }
 
+    // Disconnect resize observer
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+    }
+
+    // Remove window resize event listener
+    window.removeEventListener('resize', this.handleWindowResize.bind(this));
+  }
+
+  /**
+   * Set up a ResizeObserver to watch for container size changes
+   */
+  private setupResizeObserver() {
+    if (typeof ResizeObserver !== 'undefined') {
+      this.resizeObserver = new ResizeObserver(entries => {
+        // Only handle the first entry (our container)
+        if (entries.length > 0) {
+          this.handleResize();
+        }
+      });
+
+      const container = this.rendererContainer.nativeElement;
+      if (container) {
+        this.resizeObserver.observe(container);
+      }
+    }
+  }
+
+  /**
+   * Handle window resize events
+   */
+  private handleWindowResize() {
+    this.handleResize();
+  }
+
+  /**
+   * Handle resize events by updating the camera and renderer
+   */
+  private handleResize() {
+    if (!this.camera || !this.renderer) {
+      return;
+    }
+
+    // Get the model container element
+    const modelContainer = document.getElementById('model-container');
+
+    // Use fixed dimensions if container dimensions are not available
+    let width = 800;
+    let height = 600;
+
+    // Try to get dimensions from the model container
+    if (modelContainer) {
+      const rect = modelContainer.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
+        width = rect.width;
+        height = rect.height;
+        console.log('Resize - Using container dimensions from getBoundingClientRect:', width, height);
+      } else {
+        console.log('Resize - Container dimensions from getBoundingClientRect are invalid, using fixed dimensions');
+      }
+    }
+
+    // Update camera aspect ratio
+    this.camera.aspect = width / height;
+    this.camera.updateProjectionMatrix();
+
+    // Update renderer size
+    this.renderer.setSize(width, height, false);
+    this.renderer.setPixelRatio(window.devicePixelRatio);
   }
 
   /**
@@ -270,10 +347,12 @@ export class ThreedViewComponent implements AfterViewInit, OnDestroy {
 
 
   private initThreeJs() {
-    // Get container dimensions
-    const container = this.rendererContainer.nativeElement;
-    const width = container.clientWidth || 300;
-    const height = container.clientHeight || 600;
+    // Get the model container element
+    const modelContainer = document.getElementById('model-container');
+
+    // Force a specific size for initial rendering
+    const width = 800;
+    const height = 600;
 
     // Create scene
     this.scene = new THREE.Scene();
@@ -312,14 +391,20 @@ export class ThreedViewComponent implements AfterViewInit, OnDestroy {
     this.renderer.setPixelRatio(window.devicePixelRatio);
 
     // Add renderer to DOM
-    const modelContainer = document.getElementById('model-container');
     if (modelContainer) {
       // Clear any existing content
       while (modelContainer.firstChild) {
         modelContainer.removeChild(modelContainer.firstChild);
       }
 
+      // Add renderer to DOM
       modelContainer.appendChild(this.renderer.domElement);
+
+      // Explicitly set the renderer DOM element style to fill the container
+      const rendererElement = this.renderer.domElement;
+      rendererElement.style.width = '100%';
+      rendererElement.style.height = '100%';
+      rendererElement.style.display = 'block';
 
       // Add orbit controls
       this.controls = new OrbitControls(this.camera, this.renderer.domElement);
@@ -330,6 +415,9 @@ export class ThreedViewComponent implements AfterViewInit, OnDestroy {
 
       // Start animation loop
       this.animate();
+
+      // Force a resize after a short delay to adjust to the actual container size
+      setTimeout(() => this.handleResize(), 500);
     } else {
       console.error('Could not find model-container element');
     }
