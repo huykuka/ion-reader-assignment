@@ -11,6 +11,7 @@ import { SessionService } from '../../../services/state/session.service';
 import { Subscription } from 'rxjs';
 import dayjs from 'dayjs';
 import { robotPoseTopic } from '../../../core/constants/constant';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
 interface RobotPose {
   pose: {
@@ -29,6 +30,7 @@ interface RobotPose {
   timestamp: number;
 }
 
+@UntilDestroy()
 @Component({
   selector: 'app-threed-view',
   standalone: true,
@@ -72,7 +74,7 @@ export class ThreedViewComponent implements AfterViewInit, OnDestroy {
     });
 
     // Subscribe to playback changes
-    this.playbackSubscription = this.playbackService.$playbackValue.subscribe(
+    this.playbackSubscription = this.playbackService.$playbackValue.pipe(untilDestroyed(this)).subscribe(
       (playbackValue) => this.updateRobotPoseOnPlayback(playbackValue)
     );
 

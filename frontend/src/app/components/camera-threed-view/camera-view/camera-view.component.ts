@@ -14,12 +14,14 @@ import { PlaybackService } from '../../../services/actions/playback.service';
 import { Subscription } from 'rxjs';
 import { SessionService } from '../../../services';
 import dayjs from 'dayjs';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
 interface DecodedImage {
   url: string;
   timestamp: number;
 }
 
+@UntilDestroy()
 @Component({
   selector: 'app-camera-view',
   standalone: true,
@@ -57,7 +59,7 @@ export class CameraViewComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // Subscribe to playback value changes
-    this.playbackSubscription = this.playbackService.$playbackValue.subscribe(
+    this.playbackSubscription = this.playbackService.$playbackValue.pipe(untilDestroyed(this)).subscribe(
       (playbackValue) => {
         this.updateImageBasedOnPlayback(playbackValue);
       }
