@@ -16,6 +16,8 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { ClipboardModule } from 'ngx-clipboard';
 import { TabsModule } from 'primeng/tabs';
 import { SplitterModule } from 'primeng/splitter';
+import { ToastModule } from 'primeng/toast';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 const PRIMENG_MODULES = [
   RippleModule,
@@ -35,7 +37,9 @@ const PRIMENG_MODULES = [
   InputTextModule,
   ToolbarModule,
   TabsModule,
-  SplitterModule
+  SplitterModule,
+  ToastModule,
+  ProgressSpinnerModule
 ];
 
 const ANGULAR_MODULES = [FormsModule, CommonModule, ClipboardModule];
