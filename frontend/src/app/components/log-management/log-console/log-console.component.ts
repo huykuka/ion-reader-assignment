@@ -6,6 +6,7 @@ import { TopicMessage } from '../../../core/models/topic.model';
 import { SessionService } from '../../../services';
 import dayjs from 'dayjs';
 import { SharedModule } from '../../../shared/shared/shared.module';
+import { rosoutAggTopic } from '../../../core/constants/constant';
 
 @UntilDestroy()
 @Component({
@@ -81,7 +82,7 @@ export class LogConsoleComponent {
   updateVisibleMessages(): void {
     const topics = this.topicService.state().topics || [];
     const rosoutTopic = topics.find(
-      (topic) => topic.topicName === '/rosout_agg'
+      (topic) => topic.topicName === rosoutAggTopic
     );
 
     if (!rosoutTopic) {

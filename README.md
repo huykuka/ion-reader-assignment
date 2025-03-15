@@ -78,7 +78,7 @@ Before setting up Ion Reader, ensure you have the following installed:
 
 2. Start the development environment:
 
-   In the root directory of the project, run the following command:
+   In the root directory of the project, run the following command using BASH
 
    ```bash
    sh .bin/dev-setup.sh
@@ -100,7 +100,7 @@ Before setting up Ion Reader, ensure you have the following installed:
 
 2. Run the deployment script:
 
-   In the root directory of the project, run the following command:
+   In the root directory of the project, run the following command by BASH:
 
    ```bash
    sh .bin/deploy-from-local.prod.sh
