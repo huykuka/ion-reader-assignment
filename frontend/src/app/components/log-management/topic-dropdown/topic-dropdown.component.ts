@@ -13,6 +13,7 @@ import { RobotStateService } from '../../../services';
 export class TopicDropdownComponent {
   topicService = inject(TopicService);
   robotStateService = inject(RobotStateService);
+  currentTopic: Topic | null = null;
 
   // Computed values
   selectedTopic = computed(() => this.topicService.state().selectedTopic);
@@ -23,6 +24,7 @@ export class TopicDropdownComponent {
     effect(() => {
       if (this.topics()) {
         this.topicService.setSelectedTopic(this.topics()![0]);
+        this.currentTopic = this.topics()![0];
       }
     });
   }
