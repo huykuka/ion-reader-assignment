@@ -182,9 +182,6 @@ export class ThreedViewComponent implements AfterViewInit, OnDestroy {
       if (rect.width > 0 && rect.height > 0) {
         width = rect.width;
         height = rect.height;
-        console.log('Resize - Using container dimensions from getBoundingClientRect:', width, height);
-      } else {
-        console.log('Resize - Container dimensions from getBoundingClientRect are invalid, using fixed dimensions');
       }
     }
 
