@@ -10,6 +10,7 @@ import { PlaybackService } from '../../../services/actions/playback.service';
 import { SessionService } from '../../../services/state/session.service';
 import { Subscription } from 'rxjs';
 import dayjs from 'dayjs';
+import { robotPoseTopic } from '../../../core/constants/constant';
 
 interface RobotPose {
   pose: {
@@ -137,7 +138,7 @@ export class ThreedViewComponent implements AfterViewInit, OnDestroy {
     const topics = this.topicService.getValue('topics');
     if (!topics) return;
 
-    const odometryTopic = topics.find(topic => topic.topicName === '/tb_control/wheel_odom');
+    const odometryTopic = topics.find(topic => topic.topicName === robotPoseTopic);
     if (!odometryTopic || !odometryTopic.messages || odometryTopic.messages.length === 0) {
       console.log('No wheel odometry data found');
       return;
