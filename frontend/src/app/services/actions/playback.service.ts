@@ -176,4 +176,30 @@ export class PlaybackService {
   get speed$(): Observable<number> {
     return this.$speed.asObservable();
   }
+
+  /**
+   * Handle a new file upload during playback
+   * This method gracefully stops playback and resets the state
+   * @returns A promise that resolves when the playback has been properly stopped
+   */
+  handleNewFileUpload(): Promise<void> {
+    // Store the current playback state
+    const wasPlaying = this.$isPlaying.getValue();
+    
+    // Pause playback immediately
+    this.pause();
+    
+    // Reset the playback position
+    this.$playbackValue.next(0);
+    
+    // Clear any current message
+    this.$currentMessage.next(null);
+    
+    // Return a promise that resolves after a short delay to ensure all operations are complete
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve();
+      }, 100);
+    });
+  }
 }
