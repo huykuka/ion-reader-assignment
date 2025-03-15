@@ -51,12 +51,13 @@ export class FileUploadComponent {
   }
 
   private extractDataToState(data: IoFile) {
-    const { botConfig, botInfo, sessionInfo, botModel } = data.metadata;
+    const { botConfig, botInfo, sessionInfo, botModel, compressedTypes } = data.metadata;
     const { topics } = data;
     botConfig ? this.robotStateService.setRobotConfig(botConfig) : null;
     botInfo ? this.robotStateService.setRobotInfo(botInfo) : null;
     sessionInfo ? this.sessionService.setSession(sessionInfo) : null;
     topics ? this.topicService.setTopics(topics) : null;
     botModel ? this.robotStateService.set('botModel', botModel) : null;
+    compressedTypes ? this.robotStateService.set('compressedTypes', compressedTypes) : null;
   }
 }

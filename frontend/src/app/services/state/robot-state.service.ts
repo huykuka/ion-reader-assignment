@@ -7,6 +7,7 @@ export interface RobotState {
   robotConfig: any;
   robotInfo: any;
   botModel: any;
+  compressedTypes: string[];
   wheelOdometry?: WheelOdometry[];
 }
 

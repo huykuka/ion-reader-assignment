@@ -2,6 +2,7 @@ import { Component, computed, effect, inject } from '@angular/core';
 import { SharedModule } from '../../../shared/shared/shared.module';
 import { Topic } from '../../../core/models/topic.model';
 import { TopicService } from '../../../services/state/topic.service';
+import { RobotStateService } from '../../../services';
 
 @Component({
   selector: 'app-topic-dropdown',
@@ -11,10 +12,12 @@ import { TopicService } from '../../../services/state/topic.service';
 })
 export class TopicDropdownComponent {
   topicService = inject(TopicService);
+  robotStateService = inject(RobotStateService);
 
   // Computed values
   selectedTopic = computed(() => this.topicService.state().selectedTopic);
   topics = computed(() => this.topicService.state().topics);
+  compressedTypes = computed(() => this.robotStateService.state().compressedTypes);
 
   constructor() {
     effect(() => {
@@ -44,10 +47,7 @@ export class TopicDropdownComponent {
   private isHumanReadable(topic: Topic): boolean {
     // Check if topic has a type that indicates it's human-readable
     // This is a placeholder - adjust based on your actual topic types
-    const nonReadableTypes = [
-      'sensor_msgs/CompressedImage',
-      'sensor_msgs/PointCloud2',
-    ];
+    const nonReadableTypes = this.compressedTypes();
     return !nonReadableTypes.includes(topic.topicType || '');
   }
 }
