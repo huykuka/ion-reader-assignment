@@ -5,10 +5,11 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --host 0.0.0.0",
-    "build": "ng build",
+    "build:with-base": "ng build --configuration=production-with-base",
+    "build": "ng build --configuration=production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "deploy": "gh-pages -d dist/ion-reader/browser"
+    "deploy": "npm run build:with-base && gh-pages -d dist/ion-reader/browser"
   },
   "private": true,
   "dependencies": {

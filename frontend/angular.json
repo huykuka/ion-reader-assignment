@@ -48,6 +48,22 @@
               ],
               "outputHashing": "none"
             },
+            "production-with-base": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "1.5MB",
+                  "maximumError": "2MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "none",
+              "baseHref": "/ion-reader-assignment/"
+            },
             "development": {
               "optimization": false,
               "extractLicenses": false,
@@ -62,6 +78,9 @@
           "configurations": {
             "production": {
               "buildTarget": "ion-reader:build:production"
+            },
+            "production-with-base": {
+              "buildTarget": "ion-reader:build:production-with-base"
             },
             "development": {
               "buildTarget": "ion-reader:build:development"
